@@ -4,19 +4,6 @@
 
 typedef FILE *parchivo2;
 
-/** ESTRUCTURA DE CARTA (lo pase al archivo principal)
- *  1 - ORO
- *  2 - ESPADA
- *  3 - COPA
- *  4 - BASTO
-
-typedef struct tcarta{
-    int nro;
-    int palo;
-    bool comodin;
-    int puntos;
-};
-*/
 
 /** ESTRUCTURA DE ARRAY DE MAZO AUX */
 typedef tcarta mazo_aux[MAX_CARTAS];
@@ -66,7 +53,7 @@ void menu_gestion_baraja(int &opc){
     cout<<"1 - Generar Una Baraja"<<endl;
     cout<<"2 - Crear Mazo Aleatorio"<<endl;
     cout<<"3 - Mostrar Mazo"<<endl;
-    cout<<"4 - (testeo)mostrar primera y ultima carta del mazo(cola)"<<endl;
+    //cout<<"4 - (testeo)mostrar primera y ultima carta del mazo(cola)"<<endl;
     cout<<"9 - Salir al Menu Principal"<<endl;
     cin>>opc;
 }
@@ -272,7 +259,7 @@ void iniciar_cola(tcola &lis)
     lis.cont=0;
 }
 
-/** Creación de un nodo */
+/** Creaciï¿½n de un nodo */
 void crear(pnodo &nuevo, tcarta valor) {
     nuevo=new tnodo;
     if (nuevo!=NULL) {
@@ -327,8 +314,8 @@ tcarta quitar_cola(tcola &lis) {
 
 
 tcarta obtener_primera_carta(tcola lis) {
-    tcarta carta_vacia;  // Carta por defecto si la cola está vacía
-    carta_vacia.nro = -1; // Valor que indica una carta vacía o no válida
+    tcarta carta_vacia;  // Carta por defecto si la cola estï¿½ vacï¿½a
+    carta_vacia.nro = -1; // Valor que indica una carta vacï¿½a o no vï¿½lida
 
     if (!cola_vacia(lis)) {
         return lis.inicio->datos;
@@ -339,8 +326,8 @@ tcarta obtener_primera_carta(tcola lis) {
 
 
 tcarta obtener_ultima_carta(tcola lis) {
-    tcarta carta_vacia;  // Carta por defecto si la cola está vacía
-    carta_vacia.nro = -1; // Valor que indica una carta vacía o no válida
+    tcarta carta_vacia;  // Carta por defecto si la cola estï¿½ vacï¿½a
+    carta_vacia.nro = -1; // Valor que indica una carta vacï¿½a o no vï¿½lida
 
     if (!cola_vacia(lis)) {
         return lis.fin->datos;

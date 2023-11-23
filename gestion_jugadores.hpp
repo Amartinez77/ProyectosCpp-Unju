@@ -5,17 +5,6 @@
 
 typedef FILE *parchivo;
 
-/** lo pasare al archivo principal
-typedef tcarta tbaraja[MAX_BARAJA];
-typedef struct tjugador{
-    tcad nickname;
-    tcad apellido;
-    tcad nombre;
-    int puntaje;
-    int p_ganadas;
-    tbaraja baraja;
-};
-*/
 
 void menu_gestion_jugador(int &opc);
 void gestion_jugador(parchivo jugadores);
@@ -28,16 +17,16 @@ void eliminar_jugador(parchivo jugadores, tcad buscado);
 bool existe_jugador(parchivo jugadores, tcad buscado);
 int cantidad_jugadores(parchivo f);
 
-void agregar_jugador_rank(parchivo jugadores);
-void carga_reg_rank(tjugador &j);
+//void agregar_jugador_rank(parchivo jugadores);
+//void carga_reg_rank(tjugador &j);
 
 
 void menu_gestion_jugador(int &opc){
 
     cout<<"gestion de jugadores"<<endl;
     cout<<"1 - Agregar jugador"<<endl;
-    cout<<"2 - Consultar jugador "<<endl;
-    cout<<"3 - buscar jugador"<<endl;
+    cout<<"2 - Buscar jugador"<<endl;
+    cout<<"3 - Listar jugadores "<<endl;    
     cout<<"4 - modificar jugadores"<<endl;
     cout<<"5 - eliminar jugador"<<endl;
     cout<<"6 - cantidad de jugadores registrados(prueba)"<<endl;
@@ -65,20 +54,18 @@ void gestion_jugador(parchivo jugadores){
 
                 agregar_jugador(jugadores);
 
-            break;
+            break;        
 
-        case 2: cout<<"Consultar Jugador"<<endl;
-                consulta_jugador(jugadores);
-            break;
-
-        case 3: cout<<"Buscar Jugador"<<endl;
+        case 2: cout<<"Buscar Jugador"<<endl;
                 cout<<"ingrese el nickname del jugador a buscar"<<endl;
                 fflush(stdin);
                 gets(buscado);
                 buscar_jugador(jugadores, buscado);
-
-
             break;
+
+        case 3: cout<<"Consultar Jugador"<<endl;
+                consulta_jugador(jugadores);
+            break;            
 
         case 4: cout<<"modificar Jugador"<<endl;
                 cout<<"ingrese el nickname del jugador a modificar"<<endl;
@@ -95,7 +82,7 @@ void gestion_jugador(parchivo jugadores){
 
             break;
 
-        case 6: cout<<"cantidad"<<endl;
+        /* case 6: cout<<"cantidad"<<endl;
                 aux=cantidad_jugadores(jugadores);
                 cout<<"la cantidad de jugadores registrados es "<<aux<<endl;
             break;
@@ -106,7 +93,7 @@ void gestion_jugador(parchivo jugadores){
                 gets(buscado);
                 agregar_jugador_rank(jugadores);
 
-            break;
+            break; */
 
 
         case 9: cout<<"Hasta luego"<<endl;
@@ -125,38 +112,6 @@ void gestion_jugador(parchivo jugadores){
 
 }
 
-//void carga_reg(tjugador &j, bool modificacion){
-//
-//    tcad aux1;
-//    int auxpart, auxpunt;
-//
-//    strcpy(aux1, j.nickname);
-//    auxpart=j.p_ganadas;
-//    auxpunt=j.puntaje;
-//
-//    if(modificacion){
-//        fflush(stdin);
-//        cout<<"ingrese su nombre: ";
-//        gets(j.nombre);
-//        cout<<"ingrese su apellido: ";
-//        gets(j.apellido);
-//        strcpy(j.nickname, aux1);
-//        j.p_ganadas=auxpart;
-//        j.puntaje=auxpunt;
-//    }else{
-//        cout<<"ingrese Nickname: ";
-//        fflush(stdin);
-//        gets(j.nickname);
-//        cout<<"ingrese su nombre: ";
-//        gets(j.nombre);
-//        cout<<"ingrese su apellido: ";
-//        gets(j.apellido);
-//        j.puntaje=0;
-//        j.p_ganadas=0;
-//
-//    }
-//
-//}
 
 
 void carga_reg(tjugador &j, bool modificacion) {
@@ -435,7 +390,7 @@ int cantidad_jugadores(parchivo f) {
 
 //*********************
 
-
+/* 
 void agregar_jugador_rank(parchivo jugadores){
 
     tjugador j;
@@ -522,6 +477,4 @@ void carga_reg_rank(tjugador &j){
             cin>>j.p_ganadas;
         }
 
-
-
-}
+} */

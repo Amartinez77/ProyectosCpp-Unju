@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
+#include <conio.h>
 using namespace std;
 
 
@@ -57,23 +58,14 @@ typedef struct tjugador{
 #include "gestion_baraja.hpp"
 #include "funcionalidad_juego.hpp"
 #include "gestion_ranking.hpp"
+#include "colors.h"
 
 void menu_principal(int &opc);
-
-//void menu_gestion_jugador(int &opc);
-
-//void gestion_jugadores();
-
-//void carga_reg(tjugador &j, bool modificacion);
-//void agregar_jugador(parchivo jugadores);
-//void consulta_jugador(parchivo jugadores);
-//void buscar_jugador(parchivo jugadores, tcad buscado);
-//void modificar_jugador(parchivo jugadores, tcad buscado);
-//void eliminar_jugador(parchivo jugadores, tcad buscado);
-//bool existe_jugador(parchivo jugadores, tcad buscado);
-
+void bienvenida();
 
 main() {
+
+    system("color fd");
 
     parchivo jugadores;
     parchivo2 baraja;
@@ -89,6 +81,7 @@ main() {
 
     do{
         system("cls");
+        bienvenida();
         menu_principal(opc);
         switch(opc){
             case 1: cout<<"gestion de jugadores"<<endl;
@@ -99,12 +92,6 @@ main() {
                     gestion_baraja(baraja, cola, mazo_nuevo);
                     break;
 
-            //case 3: if (!mazo_nuevo) {
-            //     cout<<"Primero debe generar un mazo aleatorio."<<endl;
-            //      } else {
-            //     gestion_juego(mazo, jugadores, cola, mazo_nuevo);
-            //        }
-            //      break;
 
             case 3:
                     //control de ingreso 2 jugadores minimo
@@ -157,5 +144,16 @@ void menu_principal(int &opc){
 }
 
 
+void bienvenida(){
 
+    cout << "----                   BIENVENIDOS                 ----" << endl;
+    cout << endl;
+    cout << "pon a prueba tu habilidad en el mejor juego de cartas!" << endl;
+    cout << endl;
+    cout << "---               El corazon de la REINA            ---" << endl;
+    cout << endl;
+    cout << endl;
+    cout << "presiona una tecla para continuar...." << endl;
+    _getch();
+}
 
