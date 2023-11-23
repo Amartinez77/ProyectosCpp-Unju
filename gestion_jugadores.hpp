@@ -21,6 +21,7 @@ int cantidad_jugadores(parchivo f);
 //void carga_reg_rank(tjugador &j);
 
 
+// Menu de opciones de gestion de jugadores
 void menu_gestion_jugador(int &opc){
 
     cout<<"gestion de jugadores"<<endl;
@@ -37,6 +38,7 @@ void menu_gestion_jugador(int &opc){
 
 }
 
+// Procedimiento principal de gestion de jugadores
 void gestion_jugador(parchivo jugadores){
 
     int opc, aux;
@@ -116,8 +118,8 @@ void gestion_jugador(parchivo jugadores){
 
 void carga_reg(tjugador &j, bool modificacion) {
     tcad aux1;
-    int auxpart, auxpunt;
-
+    int auxpart=0, auxpunt=0;
+    fflush(stdin);
     strcpy(aux1, j.nickname);
     auxpart = j.p_ganadas;
     auxpunt = j.puntaje;
@@ -127,18 +129,21 @@ void carga_reg(tjugador &j, bool modificacion) {
         fflush(stdin);
         gets(j.nombre);
 
-        // Validar que el nombre no est� vac�o
+        // Validar que el nombre no este vacio
         while (strlen(j.nombre) == 0) {
             cout << "El nombre no puede estar vacio. Ingreselo nuevamente: ";
+            fflush(stdin);
             gets(j.nombre);
         }
 
         cout << "Ingrese su apellido: ";
+        fflush(stdin);
         gets(j.apellido);
 
-        // Validar que el apellido no est� vac�o
+        // Validar que el apellido no este vacio
         while (strlen(j.apellido) == 0) {
             cout << "El apellido no puede estar vacio. Ingreselo nuevamente: ";
+            fflush(stdin);
             gets(j.apellido);
         }
 
@@ -153,24 +158,29 @@ void carga_reg(tjugador &j, bool modificacion) {
         // Validar que el nickname no est� vac�o
         while (strlen(j.nickname) == 0) {
             cout << "El nickname no puede estar vac�o. Ingr�selo nuevamente: ";
+            fflush(stdin);
             gets(j.nickname);
         }
 
         cout << "Ingrese su nombre: ";
+        fflush(stdin);
         gets(j.nombre);
 
         // Validar que el nombre no est� vac�o
         while (strlen(j.nombre) == 0) {
             cout << "El nombre no puede estar vac�o. Ingr�selo nuevamente: ";
+            fflush(stdin);
             gets(j.nombre);
         }
 
         cout << "Ingrese su apellido: ";
+        fflush(stdin);
         gets(j.apellido);
 
         // Validar que el apellido no est� vac�o
         while (strlen(j.apellido) == 0) {
             cout << "El apellido no puede estar vac�o. Ingr�selo nuevamente: ";
+            fflush(stdin);
             gets(j.apellido);
         }
 
@@ -180,7 +190,10 @@ void carga_reg(tjugador &j, bool modificacion) {
 }
 
 
-
+/*
+Procedimiento que carga los registros de jugadores a un archivo(no agrega repetidos)
+para esto llama a la funcion existe_jugador
+*/ 
 void agregar_jugador(parchivo jugadores){
 
     tjugador j;
@@ -208,6 +221,9 @@ void agregar_jugador(parchivo jugadores){
 
 }
 
+
+// Procedimiento para listar los juegares
+
 void consulta_jugador(parchivo jugadores){
 
     tjugador a;
@@ -232,6 +248,9 @@ void consulta_jugador(parchivo jugadores){
     fclose(jugadores);
 
 }
+
+
+//Procedimiento de busqueda de jugadores
 
 void buscar_jugador(parchivo jugadores, tcad buscado){
 
@@ -270,41 +289,47 @@ void buscar_jugador(parchivo jugadores, tcad buscado){
 
 }
 
-void modificar_jugador(parchivo f, tcad buscado){
+/*
+Procedimiento de modificacion, recorre el archivo comparando 1 por uno los registros con el valor buscado
+si lo encuentra llama a la funcion de cargar el registro con la variable modificacion=true para
+evitar modificar el nickname
 
+*/
+
+void modificar_jugador(parchivo f, tcad buscado) {
     tjugador p;
-    bool band=true, modificacion;
+    bool encontrado = false;
+    bool modificacion;
 
-    f=fopen("jugadores.txt", "rb+");
+    f = fopen("jugadores.txt", "rb+");
 
-    if(f==NULL){
-        cout<<"Archivo inexistente"<<endl;
-    }else{
-
-        while(!feof(f) && !band){
-            fread(&p, sizeof(p), 1, f);
-
-            if(p.nickname==buscado){
-                band=true;
+    if (f == NULL) {
+        cout << "Archivo inexistente" << endl;
+    } else {
+        // Buscar al jugador por su nickname
+        while (fread(&p, sizeof(p), 1, f) && !encontrado) {
+            if (strcmp(p.nickname, buscado) == 0) {
+                encontrado = true;
             }
         }
 
-        if (band==true)
-        {
-            modificacion=true;
+        // Si se encontró al jugador, realizar la modificación
+        if (encontrado) {
+            modificacion = true;
             carga_reg(p, modificacion);
-            //fseek(f,-sizeof(p),1);
-            fseek(f,-sizeof(p),SEEK_CUR);
-            fwrite(&p,sizeof(p),1,f);
-        }
-        else
-            cout << "REGISTRO NO ENCONTRADO" << endl;
 
+            // Volver a la posición correcta en el archivo antes de escribir el nuevo registro
+            fseek(f, -sizeof(p), SEEK_CUR);
+            fwrite(&p, sizeof(p), 1, f);
+        } else {
+            cout << "REGISTRO NO ENCONTRADO" << endl;
+        }
     }
 
     fclose(f);
-
 }
+
+// eliminacion de un registro del archivo
 
 void eliminar_jugador(parchivo f, tcad buscado){
 
@@ -336,11 +361,9 @@ void eliminar_jugador(parchivo f, tcad buscado){
             cout << "ERROR AL ELIMINAR" << endl;
     }
 
-
-
 }
 
-
+// funcion que determina si un jugador(nickname) se encuentra en el archivo, devuelve true si es asi
 bool existe_jugador(parchivo jugadores, tcad buscado){
 
     tjugador a;
@@ -365,10 +388,13 @@ bool existe_jugador(parchivo jugadores, tcad buscado){
 
 
     fclose(jugadores);
-    cout<<encontrado;
     return encontrado;
 }
 
+/*
+funcion que determina la cantidad de jugadores en el archivo, recorre el archivo
+y cuenta los registros, en el caso de que no hayan registros devuelve un valor -1
+*/ 
 int cantidad_jugadores(parchivo f) {
     tjugador letra;
     int cont = 0;

@@ -1,4 +1,9 @@
+/****************************
+ *  Generacion del Ranking *
+ ****************************/
 
+
+// Estrucutura del Arbol
 typedef struct tranking *pranking;
 typedef struct tranking{
 
@@ -8,9 +13,9 @@ typedef struct tranking{
 
 };
 
-void recorrer_archivo(parchivo f, pranking &ranking);
+// Prototipos
 
-//typedef FILE *parchivo;
+void recorrer_archivo(parchivo f, pranking &ranking);
 
 void iniciar_arbol(pranking &a);
 void crear_nodo(pranking &a, tjugador jug);
@@ -24,13 +29,12 @@ void gestion_ranking2(parchivo j);
 void mostrar_decreciente(pranking a);
 
 
-
+// Inicio arbol
 void iniciar_arbol(pranking &a){
-
     a=NULL;
-
 }
 
+// Procedimiento de manejo de opciones principales del menu de gestion de ranking
 
 void gestion_ranking2(parchivo j) {
     int opc, opc2;
@@ -74,6 +78,12 @@ void gestion_ranking2(parchivo j) {
 
 }
 
+
+/* 
+Procedimiento que recorre el archivo y copia los registros al arbol
+(crea el nodo y inserta en el arbol) siempre y cuando el puntaje sea mayor a 0
+
+*/
 void recorrer_archivo(parchivo f, pranking &ranking){
 
     tjugador jug;
@@ -85,9 +95,12 @@ void recorrer_archivo(parchivo f, pranking &ranking){
     while(!feof(f)){
         fread(&jug, sizeof(jug), 1, f);
         if(!feof(f)){
-          cont++;
-          crear_nodo(nuevo, jug);
-          cargar_arbol(ranking, nuevo);
+            if (jug.puntaje > 0) {
+                cont++;
+                crear_nodo(nuevo, jug);
+                cargar_arbol(ranking, nuevo);
+            }
+          
         }
 
     }
@@ -113,6 +126,8 @@ void crear_nodo(pranking &nuevo, tjugador valor){
 
 }
 
+//realiza la carga del arbol insertando los valores inferiores a la izquierda
+
 void cargar_arbol(pranking &a, pranking nuevo) {
     if (a == NULL) {
         a = nuevo;
@@ -125,31 +140,25 @@ void cargar_arbol(pranking &a, pranking nuevo) {
     }
 }
 
-void preorden(pranking a) {
-    if (a != NULL) {
-        cout << a->dato.nombre << " pts: "<<a->dato.puntaje<<endl;
-        preorden(a->izq);
-        preorden(a->der);
-    }
-}
 
+// El recorrido enOrden muestra los elementos de forma creciente
 void enorden(pranking a) {
     if (a != NULL) {
         enorden(a->izq);
         cout << a->dato.nombre << " pts: "<<a->dato.puntaje<<endl;
         enorden(a->der);
-    }
-}
-
-void posorden(pranking a) {
-    if (a != NULL) {
-        posorden(a->izq);
-        posorden(a->der);
-        cout << a->dato.nombre << " pts: "<<a->dato.puntaje<<endl;
+    }else{
+        cout << "No hay jugadores con puntaje mayor a 0" << endl;
     }
 }
 
 
+
+/*
+Muestra los elementos del arbol en forma decreciente. es una modificacion
+del recorrido enOrden, inviertiendo el orden empezando por el lado
+derecho
+*/
 void mostrar_decreciente(pranking a){
 
 	if(a!=NULL){
@@ -158,9 +167,13 @@ void mostrar_decreciente(pranking a){
 		cout << a->dato.nombre << " pts: "<<a->dato.puntaje<<endl;
 		mostrar_decreciente(a->izq);
 
-	}
+	}else{
+        cout << "No hay jugadores con puntaje mayor a 0" << endl;
+    }
 
 }
+
+// menu simple
 
 void menu_ranking(int &opc){
 
