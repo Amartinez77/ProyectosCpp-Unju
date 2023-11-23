@@ -26,7 +26,7 @@ void menu_gestion_jugador(int &opc){
     cout<<"gestion de jugadores"<<endl;
     cout<<"1 - Agregar jugador"<<endl;
     cout<<"2 - Buscar jugador"<<endl;
-    cout<<"3 - Listar jugadores "<<endl;    
+    cout<<"3 - Listar jugadores "<<endl;
     cout<<"4 - modificar jugadores"<<endl;
     cout<<"5 - eliminar jugador"<<endl;
     cout<<"6 - cantidad de jugadores registrados(prueba)"<<endl;
@@ -54,7 +54,7 @@ void gestion_jugador(parchivo jugadores){
 
                 agregar_jugador(jugadores);
 
-            break;        
+            break;
 
         case 2: cout<<"Buscar Jugador"<<endl;
                 cout<<"ingrese el nickname del jugador a buscar"<<endl;
@@ -65,7 +65,7 @@ void gestion_jugador(parchivo jugadores){
 
         case 3: cout<<"Consultar Jugador"<<endl;
                 consulta_jugador(jugadores);
-            break;            
+            break;
 
         case 4: cout<<"modificar Jugador"<<endl;
                 cout<<"ingrese el nickname del jugador a modificar"<<endl;
@@ -129,7 +129,7 @@ void carga_reg(tjugador &j, bool modificacion) {
 
         // Validar que el nombre no est� vac�o
         while (strlen(j.nombre) == 0) {
-            cout << "El nombre no puede estar vac�o. Ingr�selo nuevamente: ";
+            cout << "El nombre no puede estar vacio. Ingreselo nuevamente: ";
             gets(j.nombre);
         }
 
@@ -138,7 +138,7 @@ void carga_reg(tjugador &j, bool modificacion) {
 
         // Validar que el apellido no est� vac�o
         while (strlen(j.apellido) == 0) {
-            cout << "El apellido no puede estar vac�o. Ingr�selo nuevamente: ";
+            cout << "El apellido no puede estar vacio. Ingreselo nuevamente: ";
             gets(j.apellido);
         }
 
@@ -293,7 +293,8 @@ void modificar_jugador(parchivo f, tcad buscado){
         {
             modificacion=true;
             carga_reg(p, modificacion);
-            fseek(f,-sizeof(p),1);
+            //fseek(f,-sizeof(p),1);
+            fseek(f,-sizeof(p),SEEK_CUR);
             fwrite(&p,sizeof(p),1,f);
         }
         else
@@ -390,7 +391,7 @@ int cantidad_jugadores(parchivo f) {
 
 //*********************
 
-/* 
+/*
 void agregar_jugador_rank(parchivo jugadores){
 
     tjugador j;

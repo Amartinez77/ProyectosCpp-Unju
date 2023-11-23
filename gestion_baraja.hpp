@@ -1,12 +1,13 @@
-/**
- * ******** GESTION DE BARAJA ********
- */
+/***************************
+ **** GESTION DE BARAJA ****
+ ***************************/
 
 typedef FILE *parchivo2;
 
 
 /** ESTRUCTURA DE ARRAY DE MAZO AUX */
 typedef tcarta mazo_aux[MAX_CARTAS];
+
 
 /** ESTRUCTURA DE LISTA SIMPLE DEL MAZO */
 typedef struct tnodo *pnodo;
@@ -15,6 +16,8 @@ typedef struct tnodo{
     pnodo sig;
 };
 
+
+/** ESTRUCTURA DE COLA PARA EL MAZO DE CARTAS */
 typedef struct tcola{
     pnodo inicio;
     pnodo fin;
@@ -27,12 +30,13 @@ void menu_gestion_baraja(int &opc);
 void gestion_baraja(parchivo2 baraja, tcola &cola, bool &mazo_nuevo);
 void generar_baraja(parchivo2 baraja);
 void crear_carta(tcarta &c, int palo, int nro);
-void consulta_baraja(parchivo2 baraja);
+//void consulta_baraja(parchivo2 baraja);
 void vector_mezcla(parchivo2 baraja, mazo_aux &m);
 void mostrar_mazo_aux(mazo_aux m);
 void mezclar_cartas(mazo_aux &mazo);
 void recorrer_mazo_y_cargar_lista(mazo_aux m, tcola &cola);
 void mostrar_carta(tcarta carta, int n);
+void mostrar_carta_mazo(tcarta carta, int n);
 
 
 /** FUNCIONES DE LISTAS SIMPLES (del mazo) */
@@ -44,8 +48,8 @@ bool cola_vacia(tcola lis);
 tcarta quitar_cola(tcola &lis);
 tcarta obtener_primera_carta(tcola lis);
 tcarta obtener_ultima_carta(tcola lis);
+void mostrar_mazo_de_listas(tcola &cola);
 
-void mostrar_mazo_de_listas(tcola cola);
 
 
 void menu_gestion_baraja(int &opc){
@@ -63,13 +67,11 @@ void gestion_baraja(parchivo2 baraja, tcola &cola, bool &mazo_nuevo) {
 
     int opc;
     mazo_aux mazo;
-    //tcola cola;
     bool mazo_creado=false;
 
     do{
         system("cls");
         menu_gestion_baraja(opc);
-
         switch(opc) {
 
             case 1: baraja=fopen("baraja.txt","rb");
@@ -80,11 +82,12 @@ void gestion_baraja(parchivo2 baraja, tcola &cola, bool &mazo_nuevo) {
                     fclose(baraja);
                     break;
 
+
             case 2: baraja=fopen("baraja.txt","rb");
                     if (baraja==NULL) {
                         cout<<"\nERROR: PRIMERO DEBE GENERAR UNA BARAJA\n"<<endl;
                     } else {
-                        iniciar_cola(cola); //para generar un nuevo mazo aleatorio y no salga un error de q la cola esta llena
+                        iniciar_cola(cola);
                         vector_mezcla(baraja, mazo); // carga un vector con las 48 cartas
                         mezclar_cartas(mazo); // mezcla las cartas del vector
                         recorrer_mazo_y_cargar_lista(mazo, cola); // pasa el vector a una cola de listas
@@ -95,14 +98,15 @@ void gestion_baraja(parchivo2 baraja, tcola &cola, bool &mazo_nuevo) {
                     fclose(baraja);
                     break;
 
-            case 3: if (mazo_creado==true || cola.cont>0) {
+
+            case 3: if (mazo_creado) {
                         cout<<"\nMOSTRANDO MAZO..."<<endl;
-                        //mostrar_mazo_aux(mazo);
                         mostrar_mazo_de_listas(cola);
                     } else
                         cout<<"\nERROR: PRIMERO DEBE CREAR UN MAZO\n"<<endl;
                     break;
 
+            //TEST
             case 4: cout<<"\nMostrar primera y ultima carta (tcola)"<<endl;
                     cout<<"Primera carta:"<<endl;
                     mostrar_carta(obtener_primera_carta(cola), 1);
@@ -148,7 +152,7 @@ void crear_carta(tcarta &c, int palo, int nro){
     }
 }
 
-/** PROCEDIMIENTO PARA GENERAR UNA BARAJA */
+/** PROCEDIMIENTO PARA GENERAR ARCHIVO DE BARAJA */
 void generar_baraja(parchivo2 baraja){
     tcarta carta;
     int i,j;
@@ -161,30 +165,10 @@ void generar_baraja(parchivo2 baraja){
             }
         }
         fclose(baraja);
-        cout<<"BARAJA CREADA CON EXITO"<<endl;
+        cout<<"*** BARAJA CREADA CON EXITO ***"<<endl;
     }
 }
 
-void consulta_baraja(parchivo2 baraja){
-
-    tcarta a;
-
-    baraja=fopen("baraja.txt","rb");
-    if (baraja==NULL)
-        cout << "Archivo Inexistente" << endl;
-    else
-    {
-        while (!feof(baraja))
-        {
-            fread(&a,sizeof(a),1,baraja);
-            if (!feof(baraja))
-            {
-                cout << "carta: "<<a.nro << " palo: "<< a.palo << " puntos: " << a.puntos << " comodin? : "<<a.comodin<<endl;
-            }
-        }
-    }
-    fclose(baraja);
-}
 
 /** PROCEDIMIENTO DE LLEVAR LOS REGISTROS A UN ARRAY */
 void vector_mezcla(parchivo2 baraja, mazo_aux &m) {
@@ -225,14 +209,14 @@ void mostrar_mazo_aux(mazo_aux m) {
 }
 
 
-/** RECORRIDO DEL MAZO Y CARGAR LISTA */
+/** RECORRIDO DEL MAZO(array) Y CARGAR EL MAZO(de listas) */
 void recorrer_mazo_y_cargar_lista(mazo_aux m, tcola &cola){
     int i;
     for(i=0; i<MAX_CARTAS; i++)
         agregar_cola(cola, m[i]);
 }
 
-/** MUESTRA UNA CARTA CON SUS ATRIBUTOS */
+/** MUESTRA UNA CARTA CON SUS ATRIBUTOS PARA LA BARAJA DEL JUGADOR */
 void mostrar_carta(tcarta carta, int n) {
     tcad tipo_palo, escomodin;
     switch (carta.palo) {
@@ -243,15 +227,34 @@ void mostrar_carta(tcarta carta, int n) {
     }
     if (carta.comodin) {
         strcpy(escomodin, "Si");
-        cout<<"[carta"<<n<<"] Nro: "<<carta.nro<<" "<<tipo_palo<<" "<<carta.puntos<<" pts. (comodin)"<<endl;
+        cout<<"[carta"<<n<<"] Numero: "<<carta.nro<<" "<<tipo_palo<<" "<<carta.puntos<<" pts. (comodin)"<<endl;
     } else {
-        cout<<"[carta"<<n<<"] Nro: "<<carta.nro<<" "<<tipo_palo<<" "<<carta.puntos<<" pts."<<endl;
+        cout<<"[carta"<<n<<"] Numero: "<<carta.nro<<" "<<tipo_palo<<" "<<carta.puntos<<" pts."<<endl;
     }
 }
 
+/** MUESTRA UNA CARTA CON SUS ATRIBUTOS PARA LA PRIMERA CARTA EL MAZO */
+void mostrar_carta_mazo(tcarta carta) {
+    tcad tipo_palo;
+    switch (carta.palo) {
+        case 1: strcpy(tipo_palo, "Oro"); break;
+        case 2: strcpy(tipo_palo, "Espada"); break;
+        case 3: strcpy(tipo_palo, "Copa"); break;
+        case 4: strcpy(tipo_palo, "Basto"); break;
+    }
+    cout<<"Numero "<<carta.nro<<" "<<tipo_palo<<" "<<carta.puntos<<" pts."<<endl;
+}
 
-/******************** OPERACIONES DE COLAS ***************************/
 
+
+
+
+
+/** ---------------------------- OPERACIONES DE COLAS ----------------------------- */
+/** -------------- UTILIZADO PARA EL MAZO DE CARTAS (LISTA SIMPLE) ----------------*/
+
+
+/** INICIAR MAZO */
 void iniciar_cola(tcola &lis)
 {
     lis.inicio=NULL;
@@ -259,7 +262,8 @@ void iniciar_cola(tcola &lis)
     lis.cont=0;
 }
 
-/** Creaci�n de un nodo */
+
+/** CREACION DE UN NODO DE LISTA SIMPLE */
 void crear(pnodo &nuevo, tcarta valor) {
     nuevo=new tnodo;
     if (nuevo!=NULL) {
@@ -268,11 +272,14 @@ void crear(pnodo &nuevo, tcarta valor) {
     }
 }
 
+
+/** MAZO LLENA */
 bool cola_llena(tcola lis) {
 	return lis.cont==MAX_CARTAS;
 }
 
-/** Agrega elemento al final de la cola (agregar final) */
+
+/** AGREGA UN ELEMENTO AL FINAL DEL MAZO */
 void agregar_cola(tcola &lis, tcarta valor) {
     pnodo nuevo;
     if(cola_llena(lis))
@@ -291,14 +298,16 @@ void agregar_cola(tcola &lis, tcarta valor) {
     }
 }
 
+
+/** MAZO VACIO */
 bool cola_vacia(tcola lis) {
     return lis.cont==0;
 }
 
-/** Quita el primer elemento de la cola (quitar frente) */
+
+/** QUITA EL PRIMER ELEMENTO DEL MAZO */
 tcarta quitar_cola(tcola &lis) {
     pnodo aux;
-    tcarta carta;
 	if (cola_vacia(lis)) {
         aux=NULL;
 	} else {
@@ -307,34 +316,48 @@ tcarta quitar_cola(tcola &lis) {
 		aux->sig=NULL;
 		lis.cont--;
 	}
-	carta=aux->datos;
-	delete(aux);
-	return carta;
+	return aux->datos;
 }
 
 
+
+
+/*********************************************************************/
+
+/** OBTENER EL FRENTE DEL MAZO */
 tcarta obtener_primera_carta(tcola lis) {
-    tcarta carta_vacia;  // Carta por defecto si la cola est� vac�a
-    carta_vacia.nro = -1; // Valor que indica una carta vac�a o no v�lida
-
-    if (!cola_vacia(lis)) {
+    tcarta carta_vacia;  // Carta por defecto si la cola esta vacia
+    carta_vacia.nro = -1; // Valor que indica una carta vacia o no valida
+    if (!cola_vacia(lis))
         return lis.inicio->datos;
-    } else {
+    else
         return carta_vacia;
-    }
 }
 
 
+/** OBTENER EL FINAL DEL MAZO */
 tcarta obtener_ultima_carta(tcola lis) {
-    tcarta carta_vacia;  // Carta por defecto si la cola est� vac�a
-    carta_vacia.nro = -1; // Valor que indica una carta vac�a o no v�lida
-
-    if (!cola_vacia(lis)) {
+    tcarta carta_vacia;  // Carta por defecto si la cola esta vacia
+    carta_vacia.nro = -1; // Valor que indica una carta vacia o no valida
+    if (!cola_vacia(lis))
         return lis.fin->datos;
-    } else {
+    else
         return carta_vacia;
-    }
 }
 
-
+/**void consulta_baraja(parchivo2 baraja){
+    tcarta a;
+    baraja=fopen("baraja.txt","rb");
+    if (baraja==NULL)
+        cout << "Archivo Inexistente" << endl;
+    else {
+        while (!feof(baraja)) {
+            fread(&a,sizeof(a),1,baraja);
+            if (!feof(baraja)) {
+                cout<<"carta: "<<a.nro<<" palo: "<<a.palo<<" puntos: "<<a.puntos <<" comodin? : "<<a.comodin<<endl;
+            }
+        }
+    }
+    fclose(baraja);
+}*/
 

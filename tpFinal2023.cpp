@@ -6,7 +6,7 @@
 #include <conio.h>
 using namespace std;
 
-
+/** CONSTANTES */
 const int MAX_CARTAS=48;
 const int MAX_BARAJA=5;
 const int MAX_PILA=10; //MAX_BARAJA*2
@@ -15,6 +15,8 @@ const int MAX=30;
 
 typedef char tcad[MAX];
 
+
+/** ESTRUCTURA DE CARTA */
 typedef struct tcarta{
     int nro;
     int palo;
@@ -22,7 +24,8 @@ typedef struct tcarta{
     int puntos;
 };
 
-//typedef tcarta tbaraja[MAX_BARAJA];
+
+/** ESTRUCTURA DE BARAJA DE CARTAS */
 typedef struct tbaraja *pbaraja;
 typedef struct tbaraja{
     tcarta dato;
@@ -35,13 +38,16 @@ typedef struct tblista{
     int contador;
 };
 
-/** estructura de pila */
+
+/** ESTRUCTURA DE PILA (cartas extraidas de un jugador) */
 typedef tcarta tcontenedor[MAX_PILA];
 typedef struct tpila{
     tcontenedor contenedor;
     int cima;
 };
 
+
+/** ESTRUCTURA DE UN JUGADOR */
 typedef struct tjugador{
     tcad nickname;
     tcad apellido;
@@ -52,6 +58,7 @@ typedef struct tjugador{
     tpila pila;
     int pts_partida; //puntos de una partida
 };
+
 
 /** PROCEDIMIENTOS PRINCIPALES */
 #include "gestion_jugadores.hpp"
@@ -79,9 +86,9 @@ main() {
 
     srand(time(NULL));
 
+    bienvenida();
     do{
         system("cls");
-        bienvenida();
         menu_principal(opc);
         switch(opc){
             case 1: cout<<"gestion de jugadores"<<endl;
@@ -103,8 +110,8 @@ main() {
                         }else{
                             cout<<"dentro de gestion de juego"<<endl;
                         gestion_juego(mazo, jugadores, cola, mazo_nuevo);
-                        }                        
-                        
+                        }
+
                     }
 
                     break;
@@ -119,7 +126,7 @@ main() {
                     break;
 
             default: cout<<"Opcion no valida"<<endl;
-            
+
                     break;
         }
         if (opc!=9)

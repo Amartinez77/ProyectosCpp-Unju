@@ -1,6 +1,11 @@
+/****************************
+ *  FUNCIONALIDAD DEL JUEGO *
+ ****************************/
 
 
-
+/**
+ * ESTRUCTURA DE JUGADORES SELECCIONADOS PARA UNA PARTIDA
+ */
 typedef tjugador tjugcontenedor[MAX_JUG];
 typedef struct tjugselec{
     tjugcontenedor jugadores;
@@ -8,42 +13,37 @@ typedef struct tjugselec{
 };
 
 
+/** PROCEDIMIENTOS Y FUNCIONES */
 void menu_juego();
 void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nuevo);
 void listar_jugadores(parchivo jugadores, tjugselec &js);
 bool seleccion_de_jug(parchivo jugadores, int num, tjugselec &js);
 void reiniciar_selec_jug(tjugselec &js);
-
 void repartir_cartas(tjugselec &js, tcola &cola);
+void mostrar_jug_seleccionados(tjugselec js); //PARA TESTEAR
+int contar_puntos(tjugador &jugador);
+void actualizar_jugador(parchivo jugadores, tjugador jug_buscado, int puntosGanados);
 
-void mostrar_jug_seleccionados(tjugselec js);
-
-void mostrar_mazo_de_listas(tcola cola);
-
-void mostrar_barajas(tjugselec js);
+void mostrar_mazo_de_listas(tcola &cola); //PARA TESTEAR
 void pasar_al_ultimo(tcola &lis);
 
-
-/** ------------ operaciones listas dobles de la baraja del jugador ------------ */
 void iniciar_baraja(tblista &lista);
 void crear_nodo_doble(pbaraja &nuevo, tcarta valor);
 void agregar_a_la_baraja(tblista &lista, tcarta carta);
 bool ver_baraja(tblista &lista, tcola &cola);
 void elegir_carta(tblista &lista, tpila &pila, tcola &cola, bool extraer);
 tcarta quitar_a_la_baraja(tblista &lista, int cartabuscada);
+void mostrar_barajas(tjugselec js); //PARA TESTEAR
 
-/** operaciones de pila (pila donde se extraen las cartas de un jugador) */
 void iniciar_pila(tpila &pila);
 bool pila_vacia(tpila pila);
 bool pila_llena(tpila pila);
+tcarta tope_pila(tpila pila);
 void agregar_pila(tpila &pila, tcarta nuevo);
 tcarta quitar_pila(tpila &pila);
-void mostrar_pilas(tjugselec &js);
 void mostrar_una_pila(tjugador j);
+void mostrar_pilas(tjugselec &js); // PRARA TESTEAR
 
-int contar_puntos(tjugador &jugador);
-
-void actualizar_jugador(parchivo jugadores, tjugador jug_buscado, int puntosGanados);
 
 
 void menu_juego() {
@@ -51,26 +51,29 @@ void menu_juego() {
     cout<<"1 - Elegir jugadores"<<endl;
     cout<<"2 - Repartir cartas"<<endl;
     cout<<"3 - Iniciar la partida"<<endl;
-    cout<<"4 - (testeo) mostrar jugadores seleccionados (array)"<<endl;
+    cout<<"4 - (testeo) mostrar jugadores seleccionados (array) (dsp de selec jugadores)"<<endl;
     cout<<"5 - (testeo) mostrar mazo (lista simple)"<<endl;
-    cout<<"6 - (testeo) mostrar baraja de cada jugador (listas dobles)"<<endl;
-    cout<<"7 - (testeo) mostrar pila de cada jugador (tpila)"<<endl;
+    cout<<"6 - (testeo) mostrar baraja de cada jugador (listas dobles) (despues de repartir las cartas)"<<endl;
+    cout<<"7 - (testeo) mostrar pila de cada jugador (tpila) (despues de una partida)"<<endl;
     cout<<"9 - Volver al menu principal"<<endl;
 }
+
 
 void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nuevo) {
 
     tjugselec js;
     tjugador jug_aux;
+
     int opcion;
     int i, j, m, pts, maxpts;
     int cant_jug;
 
-    bool pextraer; // puede extraer
+    bool puede_extraer;
     bool nueva_partida=false;
     bool cartas_repartidas=false;
     bool jugadores_elegidos=false;
-    bool jug_con_cartas, juego_continua, empate, encontrado=false;
+    bool encontrado;
+    bool jug_con_cartas, juego_continua, empate;
 
     do {
         system("cls");
@@ -78,10 +81,10 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
         cin>>opcion;
         switch (opcion) {
 
-            case 1: cout<<"funcion listar_jugadores()"<<endl;
-                    listar_jugadores(jugadores, js);
+            case 1: listar_jugadores(jugadores, js);
                     jugadores_elegidos=true;
                     break;
+
 
             case 2: if (jugadores_elegidos==false) {
                         cout<<"Primero debe elegir al menos 2 jugadores."<<endl;
@@ -97,15 +100,16 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
                     }
                     break;
 
+
             case 3: if (cartas_repartidas==false) {
-                        cout<<"Primero debe repartir las cartas"<<endl;
+                        cout<<"* Primero debe repartir las cartas *"<<endl;
                     } else {
                         cout<<"\n*** COMIENZA LA PARTIDA ***\n\n"<<endl;
                         cartas_repartidas=false;
                         jugadores_elegidos=false;
                         mazo_nuevo=false;
-                        system("pause");
                         cant_jug = js.ocup;
+                        system("pause");
 
                         if (nueva_partida==true) {
                             for (i=0; i<=cant_jug; i++) {
@@ -113,93 +117,86 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
                                 js.jugadores[i].pts_partida=0;
                             }
                             nueva_partida=false;
-                            empate=false;
                         }
-
 
                         juego_continua=true;
                         jug_con_cartas=true;
+
                         while (jug_con_cartas==true || juego_continua==true) {
-                            m=cola.cont;
+                            m=cola.cont; // GUARDA LA CANTIDAD DE CARTAS DEL MAZO ANTES DE CADA RONDA
                             juego_continua=false;
                             jug_con_cartas=false;
 
-                            /**recorrido de los jugadores que estan jugando la partida*/
+                            // RECORRIDO DE LOS JUGADORES QUE ESTAN JUGANDO LA PARTIDA
                             for (i=0; i<=cant_jug; i++) {
                                 system("cls");
-                                //si aun tiene cartas en la baraja toma su turno
+
                                 if (js.jugadores[i].baraja.contador>0) {
                                     jug_con_cartas=true;
                                     juego_continua=true;
                                     cout<<"ES EL TURNO DE: "<<js.jugadores[i].nickname<<endl;
-
-                                    pextraer = ver_baraja(js.jugadores[i].baraja, cola);
-                                    elegir_carta(js.jugadores[i].baraja, js.jugadores[i].pila, cola, pextraer);
-
+                                    puede_extraer = ver_baraja(js.jugadores[i].baraja, cola);
+                                    elegir_carta(js.jugadores[i].baraja, js.jugadores[i].pila, cola, puede_extraer);
                                     if (js.jugadores[i].baraja.contador==0) {
-                                        cout<<"Te acabas de quedar sin cartas!!"<<endl;
-                                        //jug_con_cartas=false;
+                                        cout<<"\n*** OH!! TE ACABAS DE QUEDAR SIN CARTAS!! ***\n"<<endl;
                                     }
-
-                                    cout<<"Pasando al siguiente turno..."<<endl;
+                                    cout<<"\n*** PASANDO AL SIGUIENTE TURNO... ***\n"<<endl;
                                     system("pause");
+
                                 } else {
-                                    cout<<"*** El jugador: "<<js.jugadores[i].nickname<<" ya no tiene cartas en su baraja ***"<<endl;
+                                    cout<<"*******************************************************************"<<endl;
+                                    cout<<"*** EL JUGADOR: "<<js.jugadores[i].nickname<<" YA NO TIENE CARTAS EN SU BARAJA ***"<<endl;
+                                    cout<<"*******************************************************************\n"<<endl;
                                     system("pause");
                                 }
 
                                 if (js.jugadores[i].baraja.contador==0) {
-                                    pts=0;
                                     pts=contar_puntos(js.jugadores[i]);
                                     js.jugadores[i].pts_partida = pts;
-                                    //system("pause");
                                 }
                             }
 
-                            //si ninguno modifica el cont del mazo(cola) es xq ninguno pudo estraer y pasa al ultimo
+                            // SI m SIGUE IGUAL AL DEL CONTADOR ES PORQUE QUE NINGUNO PUDO EXTRAER DEL MAZO
                             if (m==cola.cont && jug_con_cartas==true) {
                                 juego_continua=true;
                                 cout<<"\n*** NINGUNO DE LOS JUGADORES PUDO SACAR DEL MAZO ***"<<endl;
-                                cout<<"** Pasando carta al final del mazo **"<<endl;
+                                cout<<"** PASANDO CARTA AL FINAL DEL MAZO... **"<<endl;
                                 pasar_al_ultimo(cola);
                                 system("pause");
                             }
                         }
-
                         system("cls");
-                        /** al momento que finaliza la partida */
-                        cout<<"PUNTOS ALCANZADOS POR LOS JUGADORES"<<endl;
+
+                        // AL MOMENTO QUE FINALIZA LA PARTIDA
+                        cout<<"PUNTOS ALCANZADOS POR LOS JUGADORES\n"<<endl;
                         maxpts=-1;
                         for (i=0; i<=cant_jug; i++) {
                             pts = js.jugadores[i].pts_partida;
                             cout<<js.jugadores[i].nickname<<": "<<pts<<"pts."<<endl;
                             mostrar_una_pila(js.jugadores[i]);
-                            cout<<"-----------------------"<<endl;
+                            cout<<"---------------------------------"<<endl;
                             if (maxpts < pts) {
                                 maxpts = pts;
                                 jug_aux = js.jugadores[i];
                             }
                         }
 
-                        //buscar si hubo empate
+                        // BUSCAR SI HUBO ALGUN EMPATE
                         empate=false;
                         for (i=0; i<=cant_jug && !empate; i++) {
-                            //cout<<js.jugadores[i].pts_partida<<endl;
                             if (strcmp(jug_aux.nickname,js.jugadores[i].nickname)!=0 && jug_aux.pts_partida==js.jugadores[i].pts_partida) {
-                                cout<<"\nHubo un empate entre "<<jug_aux.nickname<<" y "<<js.jugadores[i].nickname<<" de "<<maxpts<<"pts."<<endl;
+                                cout<<"\nHubo empate entre "<<jug_aux.nickname<<" y "<<js.jugadores[i].nickname<<" de "<<maxpts<<"pts."<<endl;
                                 empate=true;
                                 system("pause");
                             }
                         }
-
                         encontrado=false;
-                        if (empate==true) {
+                        if (empate) {
                             i--;
                             cout<<"\nLOS GANADORES SON "<<jug_aux.nickname<<" Y "<<js.jugadores[i].nickname<<endl;
                             js.jugadores[i].puntaje = js.jugadores[i].puntaje + maxpts;
-
                             for (j=0; j<=cant_jug && !encontrado; j++) {
-                                if ( strcmp(jug_aux.nickname, js.jugadores[j].nickname)==0 ) {
+                                if (strcmp(jug_aux.nickname, js.jugadores[j].nickname)==0) {
                                     encontrado=true;
                                     js.jugadores[j].puntaje = js.jugadores[j].puntaje + maxpts;
                                 }
@@ -207,7 +204,6 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
                             j--;
                             actualizar_jugador(jugadores, js.jugadores[i], maxpts);
                             actualizar_jugador(jugadores, js.jugadores[j], maxpts);
-                            //cout<<"**(debug) se le asigno los puntos a "<<js.jugadores[i].nickname<<" y "<<js.jugadores[j].nickname<<" "<<maxpts<<"pts."<<endl;
 
                         } else {
                             cout<<"\nEL GANADOR ES "<<jug_aux.nickname<<" CON "<<maxpts<<"pts."<<endl;
@@ -215,28 +211,26 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
                                 if ( strcmp(jug_aux.nickname, js.jugadores[i].nickname)==0 ) {
                                     js.jugadores[i].puntaje = js.jugadores[i].puntaje + maxpts;
                                     actualizar_jugador(jugadores, js.jugadores[i], maxpts);
-                                    //cout<<"**(debug) se le asigno los puntos a "<<js.jugadores[i].nickname<<" "<<maxpts<<"pts."<<endl;
                                 }
                             }
                         }
                     }
                     break;
 
+            //TEST
             case 4: mostrar_jug_seleccionados(js);
                     break;
-
+            //TEST
             case 5: mostrar_mazo_de_listas(cola);
                     break;
-
-            //testeo
+            //TEST
             case 6: mostrar_barajas(js);
                     break;
-
-            //testeo
+            //TEST
             case 7: mostrar_pilas(js);
                     break;
 
-            case 9: cout<<"Volviendo al menu principal"<<endl;
+            case 9: cout<<"VOLVIENDO AL MENU PRINCIPAL..."<<endl;
                     break;
         }
         if (opcion!=9)
@@ -244,11 +238,19 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
     } while (opcion!=9);
 }
 
+
+
+/**
+ * LISTA LOS JUGADORES REGISTRADOS PARA ELEGIR UNO
+ *
+ * jugadores -> archivos de los jugadores registrados
+ * js -> registro con un array de jug donde se guardaran los jugadores seleccionados
+ */
 void listar_jugadores(parchivo jugadores, tjugselec &js) {
 
     tjugador a;
     char resp='s';
-    int cont=0, jugSeleccionado, contJugSel=0;
+    int jugSeleccionado, cont=0, contJugSel=0;
     bool hayJugadores=false, selValida; //seleccion de jugador valida
 
     jugadores=fopen("jugadores.txt","rb");
@@ -261,21 +263,17 @@ void listar_jugadores(parchivo jugadores, tjugselec &js) {
             if (!feof(jugadores)) {
                 cont++;
                 hayJugadores=true;
-                //cout<<cont<<" -> "<<a.nickname<<endl;
-                cout<<cont<<" -> "<<a.nickname<<" pts: "<<a.puntaje<<endl;
+                cout<<"["<<cont<<"]"<<" -> "<<a.nickname<<endl;
             }
         }
     }
     reiniciar_selec_jug(js); //reinicio ocup=-1;
-    if (hayJugadores==true) {
-        cout<<"SELECCIONE UN JUGADOR POR SU NUMERO:"<<endl;
+    if (hayJugadores) {
+        cout<<"INGRESE UN NUMERO PARA SELECCIONAR UN JUGADOR:"<<endl;
         do {
             cin>>jugSeleccionado;
-
             if (jugSeleccionado>0 && jugSeleccionado<=cont) {
-
                 selValida = seleccion_de_jug(jugadores, jugSeleccionado, js);
-
                 if (selValida==true) {
                     contJugSel++;
                 } else {
@@ -285,43 +283,44 @@ void listar_jugadores(parchivo jugadores, tjugselec &js) {
             } else {
                 cout<<"Numero invalido"<<endl;
             }
-
             if (contJugSel>=2 && selValida==true && contJugSel<MAX_JUG) {
                 cout<<"Desea seleccionar mas jugadores? s/n"<<endl;
                 cin>>resp;
             }
-
         } while (contJugSel<MAX_JUG && (resp=='s' || resp=='S'));
-
     } else {
         cout<<"No hay jugadores para mostrar."<<endl;
     }
     fclose(jugadores);
-
 }
 
-bool seleccion_de_jug(parchivo jugadores, int num, tjugselec &js) {
 
-    bool valido=true;
+/** SELECCION DE JUGADOR
+ *
+ *  despues de mostrar la lista de jugadores el usuario elige uno ingresando un numero
+ *  jugadores -> archivos de los jugadores registrados
+ *  num -> numero ingresado por el usuario para elegir jugador
+ *  js -> registro con un array de jugadores seleccionados
+ *  usamos js para agregar un jugador y/o verificar si no se selecciono antes
+ *  Retorna un booleano validando si el jugador se puede seleccionar o si ya fue seleccionado
+ */
+bool seleccion_de_jug(parchivo jugadores, int num, tjugselec &js) {
     int k=0, i;
+    bool valido=true;
     tjugador jugador;
     jugadores=fopen("jugadores.txt", "rb");
-
     if (jugadores==NULL) {
         cout<<"Archivo de jugadores no existe"<<endl;
     } else {
-
         while (!feof(jugadores) && k<num) {
             fread(&jugador, sizeof(jugador), 1, jugadores);
             if (!feof(jugadores)) {
                 k++;
                 if (k==num) {
-                    /** valida si en el array ya se encuentra este jugador
-                        en caso de encontrar es xq ya se selecciono */
+                    // valida si en el array ya se encuentra este jugador en caso de encontrar es porque ya se selecciono
                     for (i=0; i<=js.ocup; i++) {
-                        if ( strcmp(js.jugadores[i].nickname, jugador.nickname)==0 ) {
+                        if ( strcmp(js.jugadores[i].nickname, jugador.nickname)==0 )
                             return false;
-                        }
                     }
                     if (valido==true) {
                         cout<<"Has seleccionado a "<<jugador.nickname<<endl;
@@ -336,71 +335,51 @@ bool seleccion_de_jug(parchivo jugadores, int num, tjugselec &js) {
     return valido;
 }
 
+
+/** INICIA EL ARREGLO DEL REGISTRO DE JUGADORES SELECCIONADOS */
 void reiniciar_selec_jug(tjugselec &js) {
     js.ocup=-1;
 }
 
-void mostrar_jug_seleccionados(tjugselec js) {
-    int i;
-    cout<<"\n\nJugadores seleccionados:"<<endl;
-    for (i=0; i<=js.ocup; i++)
-        cout<<"Jugador"<<i+1<<" -> "<<js.jugadores[i].nickname<<endl;
 
-    cout<<"\n****************************"<<endl;
-}
-
-void mostrar_mazo_de_listas(tcola cola) {
-    pnodo i;
-    int n=0;
-    for (i=cola.inicio; i!=NULL; i=i->sig) {
-        n++;
-        mostrar_carta(i->datos, n);
-    }
-}
-
-/** ejecuta agregar_a_la_baraja() */
+/** REPARTIR CARTAS
+ *  Reparte las cartas a los jugadores seleccionados para la partida
+ *  js -> registro de jugadores seleccionados
+ *  cola -> mazo de cartas
+ */
 void repartir_cartas(tjugselec &js, tcola &cola) {
-
     int i, j, aux=js.ocup;
-
-    for (j=0; j<=aux; j++) {
+    for (j=0; j<=aux; j++)
         iniciar_baraja(js.jugadores[j].baraja);
-    }
 
     for (i=0; i<MAX_BARAJA; i++) {
-        for (j=0; j<=aux; j++) {
-            //js.jugadores[j].baraja[i] = quitar_cola(cola);
-            agregar_a_la_baraja( js.jugadores[j].baraja, quitar_cola(cola) );
-        }
+        for (j=0; j<=aux; j++)
+            agregar_a_la_baraja(js.jugadores[j].baraja, quitar_cola(cola));
     }
 }
 
-void mostrar_barajas(tjugselec js) {
-    int i, k, aux=js.ocup;
-    pbaraja j;
-
-    cout<<"\nBARAJAS DE LOS JUGADORES"<<endl;
-    for (i=0; i<=aux; i++) {
-
-        cout<<"Jugador"<<i+1<<": "<<js.jugadores[i].nickname<<endl;
-        k=0;
-        for (j=js.jugadores[i].baraja.inicio; j!=NULL; j=j->sig) {
-            k++;
-            mostrar_carta(j->dato, k);
-        }
-        cout<<endl;
-    }
+/** PASA LA PRIMERA CARTA AL ULTIMO DEL MAZO */
+void pasar_al_ultimo(tcola &lis) {
+    tcarta carta = quitar_cola(lis);
+    agregar_cola(lis, carta);
 }
 
-/** ------------ operaciones listas dobles de la baraja del jugador ------------ */
 
+
+
+/** ---------------------- OPERACIONES DE LISTAS DOBLES ------------------------ */
+/** --------------- LISTAS DOBLES PARA LA BARAJA DE CADA JUGADOR --------------- */
+
+
+/** INICIAR BARAJA DE JUGADOR*/
 void iniciar_baraja(tblista &lista) {
     lista.inicio=NULL;
     lista.fin=NULL;
     lista.contador=0;
 }
 
-/** Creaci�n de un nodo de lista doble */
+
+/** CREACION DE UN NODO DE LISTAS DOBLES */
 void crear_nodo_doble(pbaraja &nuevo, tcarta valor) {
     nuevo=new tbaraja;
     if (nuevo!=NULL) {
@@ -410,6 +389,8 @@ void crear_nodo_doble(pbaraja &nuevo, tcarta valor) {
     }
 }
 
+
+/** AGREGA AL FINAL DE LA LISTA UNA CARTA PARA LA BARAJA DEL JUGADOR */
 void agregar_a_la_baraja(tblista &lista, tcarta carta) {
     pbaraja nuevo;
     if (lista.contador==MAX_BARAJA) {
@@ -419,39 +400,38 @@ void agregar_a_la_baraja(tblista &lista, tcarta carta) {
         if (lista.contador==0) {
             lista.inicio=nuevo;
             lista.fin=nuevo;
-            lista.contador++;
         } else {
             lista.fin->sig=nuevo;
             nuevo->ant=lista.fin;
             lista.fin=nuevo;
-            lista.contador++;
         }
+        lista.contador++;
     }
 }
 
+
 /**
- * ver baraja del jugador
- * ver la primera carta del mazo
- * valida si tienes una carta >= al del mazo
+ *  VER BARAJA DE UN JUGADOR
+ *
+ *  lista de tipo tblista -> lista(baraja) de un jugador
+ *  cola -> mazo de cartas
+ *  Ve la primera carta del mazo
+ *  Valida si la carta seleccionada es >= al de mazo
  */
 bool ver_baraja(tblista &lista, tcola &cola) {
 
-    bool poderExtraer=false; //validar si tienes una carta >= al del mazo
-
+    bool poderExtraer=false;
     pbaraja i;
     int k=0;
-
     tcarta primera_carta = obtener_primera_carta(cola);
-
     int nro_pcdm = primera_carta.nro; // nro de primera carta del mazo
     int aux, nro_carta;
 
-    cout<<"\nCARTA DE MAZO:"<<endl;
-    mostrar_carta(primera_carta, 1);
-    cout<<endl;
+    cout<<"\nCARTA DE MAZO:";
+    mostrar_carta_mazo(primera_carta);
 
     if (lista.contador>0) {
-        cout<<"TU BARAJA:"<<endl;
+        cout<<"\nTU BARAJA:"<<endl;
         for (i=lista.inicio; i!=NULL; i=i->sig) {
             k++;
             mostrar_carta(i->dato, k);
@@ -460,25 +440,24 @@ bool ver_baraja(tblista &lista, tcola &cola) {
                 poderExtraer=true;
             }
         }
-    } else {
-        cout<<"Te quedaste sin cartas en tu baraja"<<endl;
     }
-
     return poderExtraer;
-
 }
 
 
-/**
- * da a elegir al jugador que carta usar para extraer del mazo
- * ejecuta funcion quitar_a_la_baraja() a la baraja del jugador
+/** ELEGIR CARTA
+ *
+ *  verifica si existe alguna carta >= o comodin al del primero del mazo
+ *  da a elegir al jugador que carta usar para extraer del mazo
+ *  controla que el usuario elija entre las cartas que tiene
+ *  ejecuta funcion quitar_a_la_baraja() a la baraja del jugador
+ *  agrega a la pila de un jugador las cartas extraidas
  */
 void elegir_carta(tblista &lista, tpila &pila, tcola &cola, bool extraer) {
 
     tcarta primera_carta = obtener_primera_carta(cola);
-    //tcarta primera_carta = quitar_cola(cola);
 
-    int nro_pcdm = primera_carta.nro; // nro de primera carta del mazo
+    int nro_pcdm = primera_carta.nro; // numero de primera carta del mazo
     tcarta carta_extraida;
 
     int nro_carta_elegida;
@@ -487,22 +466,18 @@ void elegir_carta(tblista &lista, tpila &pila, tcola &cola, bool extraer) {
     bool band=false;
 
     pbaraja i;
-    for (i=lista.inicio; i!=NULL; i=i->sig) {
+    for (i=lista.inicio; i!=NULL; i=i->sig)
         cant_cartas++;
-    }
 
     if (cant_cartas==0) {
-        cout<<"Te quedaste sin cartas en tu baraja"<<endl;
+        cout<<"---Te quedaste sin cartas en tu baraja---"<<endl;
     } else {
         if (extraer==false) {
-            cout<<"\nNO TIENE NINGUNA CARTA MAYOR O IGUAL AL DEL MAZO"<<endl;
-
+            cout<<"\n\n\n\nNO TIENES NINGUNA CARTA PARA EXTRAER DEL MAZO!!!"<<endl;
         } else {
-
-            cout<<"\nPUEDES EXTRAER UNA CARTA DEL MAZO!!!"<<endl;
-
+            cout<<"\n\n\n\nPUEDES EXTRAER UNA CARTA DEL MAZO!!!"<<endl;
             do {
-                cout<<"SELECCIONA UNA CARTA: ";
+                cout<<"\nINGRESA UN NUMERO PARA SELECCIONAR UNA CARTA: ";
                 cin>>nro_carta_elegida;
 
                 if (nro_carta_elegida>=1 && nro_carta_elegida<=cant_cartas) {
@@ -513,22 +488,21 @@ void elegir_carta(tblista &lista, tpila &pila, tcola &cola, bool extraer) {
                         k++;
                     }
                     aux = i->dato.nro;
-
                     if ( (aux>=nro_pcdm) || (aux>=1 && aux<=3) ) {
                         carta_extraida = quitar_a_la_baraja(lista, nro_carta_elegida); //quita de la baraja del jugador
                         primera_carta = quitar_cola(cola); //quita del mazo
 
-                        agregar_pila(pila, carta_extraida);
-                        agregar_pila(pila, primera_carta);
+                        agregar_pila(pila, carta_extraida); //agrega a la pila del jugador la carta de la baraja extraida
+                        agregar_pila(pila, primera_carta); // agrega a la pila del jugador la carta del mazo extraida
 
                         band=true;
                     } else {
-                        cout<<"ESTA CARTA ES MENOR A LA DEL MAZO, PRUEBA OTRA"<<endl;
+                        cout<<"\nESTA CARTA ES MENOR A LA DEL MAZO, PRUEBA OTRA!!!"<<endl;
                         band=false;
                     }
 
                 } else {
-                    cout<<"ERROR: Seleccione un numero de carta valido..."<<endl;
+                    cout<<"ERROR: INGRESE UN NUMERO VALIDO PARA LA SELECCION..."<<endl;
                     band=false;
                 }
             } while (band==false);
@@ -536,6 +510,11 @@ void elegir_carta(tblista &lista, tpila &pila, tcola &cola, bool extraer) {
     }
 }
 
+
+/** QUITAR UNA CARTA DE LA BARAJA (LISTA DOBLE)
+ *  lista -> registro de punteros de la baraja de un jugador
+ *  cartabuscada -> numero de carta seleccionada anteriormente para buscar y extraer
+ */
 tcarta quitar_a_la_baraja(tblista &lista, int cartabuscada) {
 
     pbaraja ext, i;
@@ -544,9 +523,7 @@ tcarta quitar_a_la_baraja(tblista &lista, int cartabuscada) {
 
     if (lista.contador==0) {
         cout<<"NO SE PUEDE EXTRAER, LA BARAJA DEL JUG ESTA VACIA"<<endl;
-
     } else {
-
         k=1;
         i=lista.inicio;
         while (k<cartabuscada) {
@@ -555,26 +532,22 @@ tcarta quitar_a_la_baraja(tblista &lista, int cartabuscada) {
         }
         ext=i;
         if (ext==lista.inicio && ext==lista.fin) {
-            //cout<<"llegue a pasar hasta despues de ext==lista.inicio && ext==lista.fin"<<endl;
             lista.inicio=NULL;
             lista.fin=NULL;
             lista.contador--;
         } else {
             if (ext==lista.inicio) {
-                //cout<<"llegue a pasar hasta despues de ext==lista.inicio"<<endl;
                 lista.inicio=lista.inicio->sig;
                 lista.inicio->ant=NULL;
                 ext->sig=NULL;
                 lista.contador--;
             } else {
                 if (ext==lista.fin) {
-                    //cout<<"llegue a pasar hasta despues de ext==lista.fin"<<endl;
                     lista.fin=lista.fin->ant;
                     lista.fin->sig=NULL;
                     ext->ant=NULL;
                     lista.contador--;
                 } else {
-                    //cout<<"llegue a pasar hasta despues de ELSE"<<endl;
                     (ext->sig)->ant = ext->ant;
                     (ext->ant)->sig = ext->sig;
                     ext->sig=NULL;
@@ -589,93 +562,18 @@ tcarta quitar_a_la_baraja(tblista &lista, int cartabuscada) {
     return cartaExtraida;
 }
 
-/** operaciones de pila (pila donde se extraen las cartas de un jugador) */
 
-void iniciar_pila(tpila &pila) {
-    pila.cima=-1;
-}
-
-bool pila_vacia(tpila pila) {
-    return pila.cima==-1;
-}
-
-bool pila_llena(tpila pila) {
-    return pila.cima==MAX_PILA-1;
-}
-
-void agregar_pila(tpila &pila, tcarta nuevo) {
-    if (pila_llena(pila)) {
-        cout<<"Pila llena"<<endl;
-    } else {
-        pila.cima++;
-        pila.contenedor[pila.cima]=nuevo;
-    }
-}
-
-tcarta quitar_pila(tpila &pila) {
-    tcarta ext;
-    if (pila_vacia(pila)) {
-        cout<<"Pila vacia"<<endl;
-    } else {
-        ext=pila.contenedor[pila.cima];
-        pila.cima--;
-    }
-    return ext;
-}
-
-void mostrar_pilas(tjugselec &js) {
-
-    int i, j, k, m=js.ocup, p;
-    for(i=0; i<=m; i++) {
-        cout<<"\nCartas del jugador: "<<js.jugadores[i].nickname<<endl;
-        k=0;
-        p=js.jugadores[i].pila.cima;
-        for (j=0; j<=p; j++) {
-            k++;
-            mostrar_carta(js.jugadores[i].pila.contenedor[j], k);
-        }
-    }
-}
-
-void mostrar_una_pila(tjugador j) {
-    int i, k=0, cima=j.pila.cima;
-    for (i=0; i<=cima; i++) {
-        k++;
-        mostrar_carta(j.pila.contenedor[i], k);
-    }
-
-}
-
-void pasar_al_ultimo(tcola &lis) {
-    pnodo aux;
-    tcarta valor;
-    //aux = obtener_primera_carta(lis);
-    valor = quitar_cola(lis);
-    crear(aux, valor);
-
-    lis.fin->sig=aux;
-    lis.fin=aux;
-    aux=NULL;
-    lis.cont++; //mantener el mismo conteo que le resto el quitar_cola()
-    //delete(aux);
-
-    //testeo
-    cout<<"*** LA CARTA FUE PASADO AL ULTIMO DEL MAZO ***"<<endl;
-}
-
-int contar_puntos(tjugador &jugador) {
-    int puntos=0, i, cima=jugador.pila.cima;
-    for (i=0; i<=cima; i++) {
-        puntos = puntos+jugador.pila.contenedor[i].puntos;
-    }
-    //cout<<"(debug)Puntos alcanzados por "<<jugador.nickname<<": "<<puntos<<"pts."<<endl;
-    return puntos;
-}
-
+/** ACTUALIZA EN EL ARCHIVO DE JUGADORES EL GANADOR DE LA PARTIDA CON SUS PUNTOS GANADOS
+ *
+ *  jugadores -> archivo de los jugadores registrados
+ *  jug_buscado -> jugador al que se buscara para sumarle sus puntos
+ *  puntosGanados -> puntos ganados en la partida
+ */
 void actualizar_jugador(parchivo jugadores, tjugador jug_buscado, int puntosGanados) {
 
     bool encontrado=false;
     tjugador j;
+
     jugadores=fopen("jugadores.txt", "rb+");
     while (!feof(jugadores) && !encontrado) {
         fread(&j, sizeof(j), 1, jugadores);
@@ -693,3 +591,144 @@ void actualizar_jugador(parchivo jugadores, tjugador jug_buscado, int puntosGana
     fclose(jugadores);
 }
 
+
+
+
+/** --------------------- OPERACIONES DE PILA -----------------------*/
+/** ESTA PILA ES USADA DONDE SE EXTRAERA LAS CARTAS DE LOS JUGADORES */
+
+
+/** INICIAR PILA */
+void iniciar_pila(tpila &pila) {
+    pila.cima=-1;
+}
+
+/** PILA VACIA */
+bool pila_vacia(tpila pila) {
+    return pila.cima==-1;
+}
+
+/** PILA LLENA */
+bool pila_llena(tpila pila) {
+    return pila.cima==MAX_PILA-1;
+}
+
+/** AGREGAR LA PILA */
+void agregar_pila(tpila &pila, tcarta nuevo) {
+    if (pila_llena(pila)) {
+        cout<<"Pila llena"<<endl;
+    } else {
+        pila.cima++;
+        pila.contenedor[pila.cima]=nuevo;
+    }
+}
+
+/** QUITAR A LA PILA */
+tcarta quitar_pila(tpila &pila) {
+    tcarta ext;
+    if (pila_vacia(pila)) {
+        cout<<"Pila vacia"<<endl;
+    } else {
+        ext=pila.contenedor[pila.cima];
+        pila.cima--;
+    }
+    return ext;
+}
+
+
+/** MOSTRAR UNA PILA DE UN JUGADOR EN PANTALLA */
+void mostrar_una_pila(tjugador j) {
+    int n=0;
+    tcarta aux;
+    tpila pila_aux;
+    iniciar_pila(pila_aux);
+    while (!pila_vacia(j.pila)) {
+        aux=quitar_pila(j.pila);
+        agregar_pila(pila_aux, aux);
+        n++;
+        mostrar_carta(tope_pila(pila_aux), n);
+    }
+}
+
+/** TOPE DE PILA */
+tcarta tope_pila(tpila pila) {
+    tcarta aux;
+    aux.nro = -1;
+    if (pila_vacia(pila))
+        cout<<"Sin tope, pila vacia"<<endl;
+    else
+        aux=pila.contenedor[pila.cima];
+    return aux;
+}
+
+
+/** CUENTA LOS PUNTOS EN TOTAL DE LAS CARTAS DENTRO DE LA PILA DE UN JUGADOR */
+int contar_puntos(tjugador &jugador) {
+    int i, puntos=0, cima=jugador.pila.cima;
+    for (i=0; i<=cima; i++) {
+        puntos = puntos+jugador.pila.contenedor[i].puntos;
+    }
+    return puntos;
+}
+
+
+
+
+
+/*********************************** MODULOS DE PRUEBA ***********************************/
+
+/** MUESTRA LOS JUGADORES QUE FUERON SELECCIONADOS (dsp de selec jugadores) */
+void mostrar_jug_seleccionados(tjugselec js) {
+    int i;
+    cout<<"\n\nJugadores seleccionados:"<<endl;
+    for (i=0; i<=js.ocup; i++)
+        cout<<"Jugador"<<i+1<<" -> "<<js.jugadores[i].nickname<<endl;
+
+    cout<<"\n****************************"<<endl;
+}
+
+/** MUESTRA LAS BARAJAS DE LOS JUGADORES (dsp de repartir cartas) */
+void mostrar_barajas(tjugselec js) {
+    int i, k, aux=js.ocup;
+    pbaraja j;
+
+    cout<<"\nBARAJAS DE LOS JUGADORES"<<endl;
+    for (i=0; i<=aux; i++) {
+
+        cout<<"Jugador"<<i+1<<": "<<js.jugadores[i].nickname<<endl;
+        k=0;
+        for (j=js.jugadores[i].baraja.inicio; j!=NULL; j=j->sig) {
+            k++;
+            mostrar_carta(j->dato, k);
+        }
+        cout<<endl;
+    }
+}
+
+/** MOSTRAR EL MAZO DE LISTAS SIMPLES */
+void mostrar_mazo_de_listas(tcola &cola) {
+    int n=0;
+    pnodo i;
+    tcarta aux;
+    tcola cola_aux;
+    iniciar_cola(cola_aux);
+    while (!cola_vacia(cola)) {
+        aux = quitar_cola(cola);
+        agregar_cola(cola_aux, aux);
+        n++;
+        mostrar_carta(obtener_ultima_carta(cola_aux), n);
+    }
+    while (!cola_vacia(cola_aux)) {
+        aux = quitar_cola(cola_aux);
+        agregar_cola(cola, aux);
+    }
+}
+
+/** MOSTRAR PILAS DE LOS JUGADORES SELECCIONADOS (usar dsp de jugar una partida) */
+void mostrar_pilas(tjugselec &js) {
+    int i, m=js.ocup;
+    for(i=0; i<=m; i++) {
+        cout<<"\nCartas del jugador: "<<js.jugadores[i].nickname<<endl;
+        mostrar_una_pila(js.jugadores[i]);
+    }
+}
