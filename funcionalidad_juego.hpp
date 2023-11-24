@@ -47,15 +47,15 @@ void mostrar_pilas(tjugselec &js); // PRARA TESTEAR
 
 
 void menu_juego() {
-    cout<<"*** MENU DE JUEGO ***"<<endl;
-    cout<<"1 - Elegir jugadores"<<endl;
-    cout<<"2 - Repartir cartas"<<endl;
-    cout<<"3 - Iniciar la partida"<<endl;
-    cout<<"4 - (testeo) mostrar jugadores seleccionados (array) (dsp de selec jugadores)"<<endl;
-    cout<<"5 - (testeo) mostrar mazo (lista simple)"<<endl;
-    cout<<"6 - (testeo) mostrar baraja de cada jugador (listas dobles) (despues de repartir las cartas)"<<endl;
-    cout<<"7 - (testeo) mostrar pila de cada jugador (tpila) (despues de una partida)"<<endl;
-    cout<<"9 - Volver al menu principal"<<endl;
+    cout<< BLACK <<" ***    MENU DE JUEGO    *** "<<endl;
+    cout<<" 1 - Elegir jugadores"<<endl;
+    cout<<" 2 - Repartir cartas"<<endl;
+    cout<<" 3 - Iniciar la partida"<<endl;
+    cout<<" 4 - (testeo) mostrar jugadores seleccionados (array) (dsp de selec jugadores)"<<endl;
+    cout<<" 5 - (testeo) mostrar mazo (lista simple)"<<endl;
+    cout<<" 6 - (testeo) mostrar baraja de cada jugador (listas dobles) (despues de repartir las cartas)"<<endl;
+    cout<<" 7 - (testeo) mostrar pila de cada jugador (tpila) (despues de una partida)"<<endl;
+    cout<<" 9 - Volver al menu principal"<<endl;
 }
 
 
@@ -77,6 +77,7 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
 
     do {
         system("cls");
+        system("title El Corazon de la reina !!!  - Comienza el juego !!!");
         menu_juego();
         cin>>opcion;
         switch (opcion) {
@@ -134,7 +135,28 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
                                 if (js.jugadores[i].baraja.contador>0) {
                                     jug_con_cartas=true;
                                     juego_continua=true;
-                                    cout<<"ES EL TURNO DE: "<<js.jugadores[i].nickname<<endl;
+                                    cout << "ES EL TURNO DE: ";
+                                    switch (i)
+                                    {
+                                    case 0:
+                                        cout<< GREEN << js.jugadores[i].nickname << endl;
+                                        cout << BLACK << endl;
+                                        break;
+                                    case 1:
+                                        cout<< ROSE << js.jugadores[i].nickname << endl;
+                                        cout << BLACK << endl;
+                                        break;
+                                    case 2:
+                                        cout<< CYAN << js.jugadores[i].nickname << endl;
+                                        cout << BLACK << endl;
+                                        break;
+                                    case 3:
+                                        cout<< MAGENTA << js.jugadores[i].nickname << endl;
+                                        cout << BLACK << endl;
+                                        break;
+                                    default:
+                                        break;
+                                    }
                                     puede_extraer = ver_baraja(js.jugadores[i].baraja, cola);
                                     elegir_carta(js.jugadores[i].baraja, js.jugadores[i].pila, cola, puede_extraer);
                                     if (js.jugadores[i].baraja.contador==0) {
@@ -193,7 +215,8 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
                         encontrado=false;
                         if (empate) {
                             i--;
-                            cout<<"\nLOS GANADORES SON "<<jug_aux.nickname<<" Y "<<js.jugadores[i].nickname<<endl;
+                            cout<< GREEN <<"\nLOS GANADORES SON "<<jug_aux.nickname<<" Y "<<js.jugadores[i].nickname<<endl;
+                            cout << BLACK << endl;
                             js.jugadores[i].puntaje = js.jugadores[i].puntaje + maxpts;
                             for (j=0; j<=cant_jug && !encontrado; j++) {
                                 if (strcmp(jug_aux.nickname, js.jugadores[j].nickname)==0) {
@@ -206,7 +229,9 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
                             actualizar_jugador(jugadores, js.jugadores[j], maxpts);
 
                         } else {
-                            cout<<"\nEL GANADOR ES "<<jug_aux.nickname<<" CON "<<maxpts<<"pts."<<endl;
+                            cout << "\nEL GANADOR ES ";
+                            cout<< YELLOW << BG_GREEN << jug_aux.nickname << " CON " << maxpts << "pts." << RESET <<endl;
+                            cout << BLACK << endl;
                             for(i=0; i<=cant_jug; i++) {
                                 if ( strcmp(jug_aux.nickname, js.jugadores[i].nickname)==0 ) {
                                     js.jugadores[i].puntaje = js.jugadores[i].puntaje + maxpts;
@@ -215,6 +240,7 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
                             }
                         }
                     }
+
                     break;
 
             //TEST
@@ -255,7 +281,7 @@ void listar_jugadores(parchivo jugadores, tjugselec &js) {
 
     jugadores=fopen("jugadores.txt","rb");
     if (jugadores==NULL) {
-        cout << "Archivo de jugadores Inexistente" << endl;
+        cout << RED << "Archivo de jugadores Inexistente" << endl;
     } else {
         cout << "JUGADORES:"<<endl;
         while (!feof(jugadores)) {
@@ -263,13 +289,13 @@ void listar_jugadores(parchivo jugadores, tjugselec &js) {
             if (!feof(jugadores)) {
                 cont++;
                 hayJugadores=true;
-                cout<<"["<<cont<<"]"<<" -> "<<a.nickname<<endl;
+                cout<< BLUE <<"["<<cont<<"]"<<" -> "<<a.nickname<<endl;
             }
         }
     }
     reiniciar_selec_jug(js); //reinicio ocup=-1;
     if (hayJugadores) {
-        cout<<"INGRESE UN NUMERO PARA SELECCIONAR UN JUGADOR:"<<endl;
+        cout<< BLACK <<"INGRESE UN NUMERO PARA SELECCIONAR UN JUGADOR:"<<endl;
         do {
             cin>>jugSeleccionado;
             if (jugSeleccionado>0 && jugSeleccionado<=cont) {
@@ -277,14 +303,14 @@ void listar_jugadores(parchivo jugadores, tjugselec &js) {
                 if (selValida==true) {
                     contJugSel++;
                 } else {
-                    cout<<"ERROR: Este jugador ya fue seleccionado, elija otro."<<endl;
+                    cout<< RED <<"ERROR: Este jugador ya fue seleccionado, elija otro."<<endl;
                     resp='s';
                 }
             } else {
-                cout<<"Numero invalido"<<endl;
+                cout<< RED <<"Numero invalido"<<endl;
             }
             if (contJugSel>=2 && selValida==true && contJugSel<MAX_JUG) {
-                cout<<"Desea seleccionar mas jugadores? s/n"<<endl;
+                cout<< BLACK <<"Desea seleccionar mas jugadores? s/n"<<endl;
                 cin>>resp;
             }
         } while (contJugSel<MAX_JUG && (resp=='s' || resp=='S'));
@@ -310,7 +336,8 @@ bool seleccion_de_jug(parchivo jugadores, int num, tjugselec &js) {
     tjugador jugador;
     jugadores=fopen("jugadores.txt", "rb");
     if (jugadores==NULL) {
-        cout<<"Archivo de jugadores no existe"<<endl;
+        cout<< RED <<"Archivo de jugadores no existe"<<endl;
+        cout << BLACK << endl;
     } else {
         while (!feof(jugadores) && k<num) {
             fread(&jugador, sizeof(jugador), 1, jugadores);
@@ -323,7 +350,8 @@ bool seleccion_de_jug(parchivo jugadores, int num, tjugselec &js) {
                             return false;
                     }
                     if (valido==true) {
-                        cout<<"Has seleccionado a "<<jugador.nickname<<endl;
+                        cout << "Has seleccionado a: ";
+                        cout<< BLUE <<jugador.nickname << endl;
                         js.ocup++;
                         js.jugadores[js.ocup]=jugador;
                     }
@@ -331,6 +359,7 @@ bool seleccion_de_jug(parchivo jugadores, int num, tjugselec &js) {
             }
         }
     }
+    cout << BLACK << endl;
     fclose(jugadores);
     return valido;
 }
@@ -470,14 +499,16 @@ void elegir_carta(tblista &lista, tpila &pila, tcola &cola, bool extraer) {
         cant_cartas++;
 
     if (cant_cartas==0) {
-        cout<<"---Te quedaste sin cartas en tu baraja---"<<endl;
+        cout<< YELLOW <<"---Te quedaste sin cartas en tu baraja---"<<endl;
+        cout << BLACK << endl;
     } else {
         if (extraer==false) {
-            cout<<"\n\n\n\nNO TIENES NINGUNA CARTA PARA EXTRAER DEL MAZO!!!"<<endl;
+            cout<< ORANGE <<"\n\n\n\nNO TIENES NINGUNA CARTA PARA EXTRAER DEL MAZO!!!"<<endl;
+            cout << BLACK << endl;
         } else {
-            cout<<"\n\n\n\nPUEDES EXTRAER UNA CARTA DEL MAZO!!!"<<endl;
+            cout<< GREEN <<"\n\n\n\nPUEDES EXTRAER UNA CARTA DEL MAZO!!!"<<endl;
             do {
-                cout<<"\nINGRESA UN NUMERO PARA SELECCIONAR UNA CARTA: ";
+                cout<< BLACK <<"\nINGRESA UN NUMERO PARA SELECCIONAR UNA CARTA: ";
                 cin>>nro_carta_elegida;
 
                 if (nro_carta_elegida>=1 && nro_carta_elegida<=cant_cartas) {
@@ -502,7 +533,8 @@ void elegir_carta(tblista &lista, tpila &pila, tcola &cola, bool extraer) {
                     }
 
                 } else {
-                    cout<<"ERROR: INGRESE UN NUMERO VALIDO PARA LA SELECCION..."<<endl;
+                    cout<< RED <<"ERROR: INGRESE UN NUMERO VALIDO PARA LA SELECCION..."<<endl;
+                    cout << BLACK << endl;
                     band=false;
                 }
             } while (band==false);
@@ -522,7 +554,7 @@ tcarta quitar_a_la_baraja(tblista &lista, int cartabuscada) {
     int k;
 
     if (lista.contador==0) {
-        cout<<"NO SE PUEDE EXTRAER, LA BARAJA DEL JUG ESTA VACIA"<<endl;
+        cout<<"NO SE PUEDE EXTRAER, LA BARAJA DEL JUGADOR ESTA VACIA"<<endl;
     } else {
         k=1;
         i=lista.inicio;
@@ -582,7 +614,8 @@ void actualizar_jugador(parchivo jugadores, tjugador jug_buscado, int puntosGana
         }
     }
     if (!encontrado) {
-        cout<<"Error al actualizar: El jugador no existe en el archivo"<<endl;
+        cout<< RED <<"Error al actualizar: El jugador no existe en el archivo"<<endl;
+        cout << BLACK << endl;
     } else {
         j.puntaje = j.puntaje + puntosGanados;
         fseek(jugadores, -sizeof(j), SEEK_CUR);
@@ -682,7 +715,8 @@ void mostrar_jug_seleccionados(tjugselec js) {
     int i;
     cout<<"\n\nJugadores seleccionados:"<<endl;
     for (i=0; i<=js.ocup; i++)
-        cout<<"Jugador"<<i+1<<" -> "<<js.jugadores[i].nickname<<endl;
+        cout<< BLUE <<"Jugador"<<i+1<<" -> "<<js.jugadores[i].nickname<<endl;
+        cout << BLACK << endl;
 
     cout<<"\n****************************"<<endl;
 }
@@ -695,7 +729,9 @@ void mostrar_barajas(tjugselec js) {
     cout<<"\nBARAJAS DE LOS JUGADORES"<<endl;
     for (i=0; i<=aux; i++) {
 
-        cout<<"Jugador"<<i+1<<": "<<js.jugadores[i].nickname<<endl;
+        cout << "Jugador" << i + 1 << ": ";
+        cout<< BLUE <<js.jugadores[i].nickname << endl;
+        cout << BLACK << endl;
         k=0;
         for (j=js.jugadores[i].baraja.inicio; j!=NULL; j=j->sig) {
             k++;

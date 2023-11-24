@@ -69,10 +69,11 @@ typedef struct tjugador{
 
 void menu_principal(int &opc);
 void bienvenida();
+void despedida();
 
 main() {
 
-    system("color fd");
+    system("color f0");
 
     parchivo jugadores;
     parchivo2 baraja;
@@ -85,10 +86,11 @@ main() {
     bool mazo_nuevo=false;
 
     srand(time(NULL));
-
+    system("title BIENVENIDO !!!!");
     bienvenida();
     do{
         system("cls");
+        system("title El Corazon de la reina !!!  - Menu Principal");
         menu_principal(opc);
         switch(opc){
             case 1: cout<<"gestion de jugadores"<<endl;
@@ -116,9 +118,11 @@ main() {
 
                     break;
 
+
+
             case 4: cout<<"ranking"<<endl;
                     gestion_ranking2(jugadores);
-
+     
                     break;
 
             case 9: cout<<"\n*** HAS SALIDO DEL JUEGO ***"<<endl;
@@ -132,6 +136,7 @@ main() {
         if (opc!=9)
             system("pause");
     } while (opc!=9);
+    despedida();
 }
 
 
@@ -152,15 +157,55 @@ void menu_principal(int &opc){
 
 
 void bienvenida(){
-
-    cout << "----                   BIENVENIDOS                 ----" << endl;
+    
+    cout << "  ----                             BIENVENIDOS                 ----" << endl;
     cout << endl;
-    cout << "pon a prueba tu habilidad en el mejor juego de cartas!" << endl;
+    cout << MAGENTA << "       -------------        EL CORAZON DE LA REINA      --------------" << endl;
+    cout << ORANGE << endl;
+    cout << ".------..------..------.     .------..------..------.     .------..------..------." << endl;
+    cout << "|7.--. ||3.--. ||9.--. |.-.  |1.--. ||4.--. ||0.--. |.-.  |6.--. ||3.--. ||5.--. |" << endl;
+    cout << "| :(): || :(): || :/\: ((5)) | :/\: || :/\: || :/\: ((5)) | (\/) || :(): || :/\: |" << endl;
+    cout << "| ()() || ()() || (__) |'-.-.| (__) || :\/: || :\/: |'-.-.| :\/: || ()() || (__) |" << endl;
+    cout << "| '--'7|| '--'3|| '--'9| ((1)) '--'1|| '--'4|| '--'0| ((1)) '--'6|| '--'3|| '--'5|" << endl;
+    cout << "`------'`------'`------'  '-'`------'`------'`------'  '-'`------'`------'`------'" << endl;
     cout << endl;
-    cout << "---               El corazon de la REINA            ---" << endl;
+    cout << endl;
+    cout << BLACK << "           pon a prueba tu habilidad en el mejor juego de cartas!" << endl;
+    cout << endl;
+    
     cout << endl;
     cout << endl;
     cout << "presiona una tecla para continuar...." << endl;
     _getch();
 }
 
+void despedida(){
+
+    system("cls");
+    system("title El Corazon de la reina !!!  - Gracias!!!");
+    cout << "        -----------------      EL CORAZON DE LA REINA      --------------" << endl;
+    cout << ".------..------..------.     .------..------..------.     .------..------..------." << endl;
+    cout << "|7.--. ||3.--. ||9.--. |.-.  |1.--. ||4.--. ||0.--. |.-.  |6.--. ||3.--. ||5.--. |" << endl;
+    cout << "| :(): || :(): || :/\: ((5)) | :/\: || :/\: || :/\: ((5)) | (\/) || :(): || :/\: |" << endl;
+    cout << "| ()() || ()() || (__) |'-.-.| (__) || :\/: || :\/: |'-.-.| :\/: || ()() || (__) |" << endl;
+    cout << "| '--'7|| '--'3|| '--'9| ((1)) '--'1|| '--'4|| '--'0| ((1)) '--'6|| '--'3|| '--'5|" << endl;
+    cout << "`------'`------'`------'  '-'`------'`------'`------'  '-'`------'`------'`------'" << endl;
+    cout << endl;
+    cout << endl;
+    cout << "Gracias por Jugar!" << endl;
+    cout << endl;
+    cout << endl;
+    cout << endl;
+    cout << endl;
+    cout << endl;
+    cout << endl;
+    cout << "integrantes: Martinez Roberto Ariel Jesus - Yufra Marcelo Alejandro" << endl;
+    cout << "Profesores:  Ing. Marcelo Perez Ibarra - Ing. Veronica Torres" << endl;
+    cout << endl;
+    cout << endl;
+    cout << "Catedra: Estructura de Datos" << endl;
+    cout << endl;
+    cout << endl;
+    cout << endl;
+    //_getch();
+}

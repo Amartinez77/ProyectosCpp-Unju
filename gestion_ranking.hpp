@@ -27,7 +27,7 @@ void posorden(pranking a);
 void menu_ranking(int &opc);
 void gestion_ranking2(parchivo j);
 void mostrar_decreciente(pranking a);
-
+void liberar_arbol(pranking a);
 
 // Inicio arbol
 void iniciar_arbol(pranking &a){
@@ -44,22 +44,24 @@ void gestion_ranking2(parchivo j) {
     iniciar_arbol(arbol);
     recorrer_archivo(j, arbol);
 
+
     do {
         system("cls");
+        system("title El Corazon de la reina !!!  - Ranking");
         menu_ranking(opc);
 
         switch (opc) {
             case 1:
-                cout << "Ranking de jugadores" << endl;
-                cout << "Ingrese 0 para decreciente, 1 para creciente: ";
-
-                cin >> opc2;
-                if(opc2==0){
-                    mostrar_decreciente(arbol);
-                }else{
-                    enorden(arbol);
-                }
-
+                
+                    cout << "Ranking de jugadores" << endl;
+                    cout << "Ingrese 0 para mostrar en orden decreciente y  1 para creciente: ";
+                    cin >> opc2;
+                    if(opc2==0){
+                        mostrar_decreciente(arbol);
+                    }else{
+                        enorden(arbol);
+                    }
+                    
                 break;
 
             case 5:
@@ -75,7 +77,7 @@ void gestion_ranking2(parchivo j) {
 
     } while (opc != 5);
 
-
+    liberar_arbol(arbol);
 }
 
 
@@ -147,8 +149,6 @@ void enorden(pranking a) {
         enorden(a->izq);
         cout << a->dato.nombre << " pts: "<<a->dato.puntaje<<endl;
         enorden(a->der);
-    }else{
-        cout << "No hay jugadores con puntaje mayor a 0" << endl;
     }
 }
 
@@ -167,9 +167,7 @@ void mostrar_decreciente(pranking a){
 		cout << a->dato.nombre << " pts: "<<a->dato.puntaje<<endl;
 		mostrar_decreciente(a->izq);
 
-	}else{
-        cout << "No hay jugadores con puntaje mayor a 0" << endl;
-    }
+	}
 
 }
 
@@ -181,4 +179,13 @@ void menu_ranking(int &opc){
     cout<<"5- Salir"<<endl;
     cin>>opc;
 
+}
+
+// funcion para liberar nodos
+void liberar_arbol(pranking a) {
+    if (a != NULL) {
+        liberar_arbol(a->izq);
+        liberar_arbol(a->der);
+        delete a;
+    }
 }

@@ -49,16 +49,15 @@ tcarta quitar_cola(tcola &lis);
 tcarta obtener_primera_carta(tcola lis);
 tcarta obtener_ultima_carta(tcola lis);
 void mostrar_mazo_de_listas(tcola &cola);
-
-
+void liberar_cola(tcola &lis);
 
 void menu_gestion_baraja(int &opc){
-    cout<<"*** GESTION DE BARAJA ***"<<endl;
-    cout<<"1 - Generar Una Baraja"<<endl;
-    cout<<"2 - Crear Mazo Aleatorio"<<endl;
-    cout<<"3 - Mostrar Mazo"<<endl;
+    cout<< BLACK <<" ***    GESTION DE BARAJA    *** "<<endl;
+    cout<<" 1 - Generar Una Baraja"<<endl;
+    cout<<" 2 - Crear Mazo Aleatorio"<<endl;
+    cout<<" 3 - Mostrar Mazo"<<endl;
     //cout<<"4 - (testeo)mostrar primera y ultima carta del mazo(cola)"<<endl;
-    cout<<"9 - Salir al Menu Principal"<<endl;
+    cout<<" 9 - Salir al Menu Principal"<<endl;
     cin>>opc;
 }
 
@@ -71,6 +70,7 @@ void gestion_baraja(parchivo2 baraja, tcola &cola, bool &mazo_nuevo) {
 
     do{
         system("cls");
+        system("title El Corazon de la reina !!!  - Gestion de Cartas");
         menu_gestion_baraja(opc);
         switch(opc) {
 
@@ -122,6 +122,7 @@ void gestion_baraja(parchivo2 baraja, tcola &cola, bool &mazo_nuevo) {
         }
         if (opc!=9)
             system("pause");
+            
     } while (opc!=9);
 }
 
@@ -165,7 +166,8 @@ void generar_baraja(parchivo2 baraja){
             }
         }
         fclose(baraja);
-        cout<<"*** BARAJA CREADA CON EXITO ***"<<endl;
+        cout<< GREEN <<"*** BARAJA CREADA CON EXITO ***"<<endl;
+        cout << BLACK << endl;
     }
 }
 
@@ -227,9 +229,9 @@ void mostrar_carta(tcarta carta, int n) {
     }
     if (carta.comodin) {
         strcpy(escomodin, "Si");
-        cout<<"[carta"<<n<<"] Numero: "<<carta.nro<<" "<<tipo_palo<<" "<<carta.puntos<<" pts. (comodin)"<<endl;
+        cout<< ORANGE <<"[carta"<<n<<"] Numero: "<<carta.nro<<" "<<tipo_palo<<" "<<carta.puntos<<" pts. (comodin)"<<endl;
     } else {
-        cout<<"[carta"<<n<<"] Numero: "<<carta.nro<<" "<<tipo_palo<<" "<<carta.puntos<<" pts."<<endl;
+        cout<< BLACK <<"[carta"<<n<<"] Numero: "<<carta.nro<<" "<<tipo_palo<<" "<<carta.puntos<<" pts."<<endl;
     }
 }
 
@@ -242,11 +244,8 @@ void mostrar_carta_mazo(tcarta carta) {
         case 3: strcpy(tipo_palo, "Copa"); break;
         case 4: strcpy(tipo_palo, "Basto"); break;
     }
-    cout<<"Numero "<<carta.nro<<" "<<tipo_palo<<" "<<carta.puntos<<" pts."<<endl;
+    cout<< BLACK <<"Numero "<<carta.nro<<" "<<tipo_palo<<" "<<carta.puntos<<" pts."<<endl;
 }
-
-
-
 
 
 
@@ -345,19 +344,18 @@ tcarta obtener_ultima_carta(tcola lis) {
         return carta_vacia;
 }
 
-/**void consulta_baraja(parchivo2 baraja){
-    tcarta a;
-    baraja=fopen("baraja.txt","rb");
-    if (baraja==NULL)
-        cout << "Archivo Inexistente" << endl;
-    else {
-        while (!feof(baraja)) {
-            fread(&a,sizeof(a),1,baraja);
-            if (!feof(baraja)) {
-                cout<<"carta: "<<a.nro<<" palo: "<<a.palo<<" puntos: "<<a.puntos <<" comodin? : "<<a.comodin<<endl;
-            }
-        }
-    }
-    fclose(baraja);
-}*/
 
+void liberar_cola(tcola &lis) {
+    pnodo actual = lis.inicio;
+    pnodo siguiente;
+
+    while (actual != NULL) {
+        siguiente = actual->sig;
+        delete actual;
+        actual = siguiente;
+    }
+
+    lis.inicio = NULL;
+    lis.fin = NULL;
+    lis.cont = 0;
+}

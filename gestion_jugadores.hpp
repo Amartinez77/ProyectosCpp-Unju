@@ -4,7 +4,7 @@
 
 
 typedef FILE *parchivo;
-
+#include "colors.h"
 
 void menu_gestion_jugador(int &opc);
 void gestion_jugador(parchivo jugadores);
@@ -24,15 +24,14 @@ int cantidad_jugadores(parchivo f);
 // Menu de opciones de gestion de jugadores
 void menu_gestion_jugador(int &opc){
 
-    cout<<"gestion de jugadores"<<endl;
-    cout<<"1 - Agregar jugador"<<endl;
-    cout<<"2 - Buscar jugador"<<endl;
-    cout<<"3 - Listar jugadores "<<endl;
-    cout<<"4 - modificar jugadores"<<endl;
-    cout<<"5 - eliminar jugador"<<endl;
-    cout<<"6 - cantidad de jugadores registrados(prueba)"<<endl;
-    cout<<"7 - Agregar solo para el ranking dsps borrar"<<endl;
-    cout<<"9 - Salir"<<endl;
+    cout<< BLACK <<"****   gestion de jugadores   ****"<<endl;
+    cout << endl;
+    cout<<" 1 - Agregar jugador"<<endl;
+    cout<<" 2 - Buscar jugador"<<endl;
+    cout<<" 3 - Listar jugadores "<<endl;
+    cout<<" 4 - modificar jugadores"<<endl;
+    cout<<" 5 - eliminar jugador"<<endl;
+    cout<<" 9 - Salir"<<endl;
     cin>>opc;
 
 
@@ -48,6 +47,7 @@ void gestion_jugador(parchivo jugadores){
     do{
 
         system("cls");
+        system("title El Corazon de la reina !!!  - Menu de Jugadores");
         menu_gestion_jugador(opc);
 
         switch(opc){
@@ -84,18 +84,6 @@ void gestion_jugador(parchivo jugadores){
 
             break;
 
-        /* case 6: cout<<"cantidad"<<endl;
-                aux=cantidad_jugadores(jugadores);
-                cout<<"la cantidad de jugadores registrados es "<<aux<<endl;
-            break;
-
-        case 7: cout<<"Agregar Jugador (solo para probar ranking)"<<endl;
-                cout<<"ingrese el nickname del jugador a modificar"<<endl;
-                fflush(stdin);
-                gets(buscado);
-                agregar_jugador_rank(jugadores);
-
-            break; */
 
 
         case 9: cout<<"Hasta luego"<<endl;
@@ -106,6 +94,7 @@ void gestion_jugador(parchivo jugadores){
 
         }
 
+    
     system("pause");
 
 
@@ -207,12 +196,13 @@ void agregar_jugador(parchivo jugadores){
 
         carga_reg(j, modificacion);
         if (existe_jugador(jugadores, j.nickname)){
-            cout<<"ya existe jugador!"<<endl;
+            cout<<RED<<"ya existe jugador! - Intente nuevamente"<<endl;
         }else{
             fwrite(&j, sizeof(j), 1, jugadores);
+            cout << GREEN << " Jugador agregado correctamente !" << endl;
         }
 
-        cout<<"desea ingresar mas jugadores s/n "<<endl;
+        cout<<BLACK<<"Desea ingresar mas jugadores s/n "<<endl;
         cin>>rta;
 
     }while(rta!='N' && rta!='n');
@@ -220,6 +210,8 @@ void agregar_jugador(parchivo jugadores){
     fclose(jugadores);
 
 }
+
+
 
 
 // Procedimiento para listar los juegares
@@ -230,18 +222,24 @@ void consulta_jugador(parchivo jugadores){
 
     jugadores=fopen("jugadores.txt","rb");
     if (jugadores==NULL)
-        cout << "Archivo Inexistente" << endl;
+        cout << RED << "Archivo Inexistente" << endl;
     else
     {
+        cout << MAGENTA << " ---    Listado de Jugadores Registrados    --- " << endl;
         while (!feof(jugadores))
         {
             fread(&a,sizeof(a),1,jugadores);
             if (!feof(jugadores))
             {
-                cout << "\nNickname: " << a.nickname << endl;
-                cout << "Nombre: " << a.nombre << endl;
-                cout << "Apellido: " << a.apellido << endl;
-                cout << "Puntaje: " << a.puntaje << endl;
+                cout << GREEN << "Nickname: " << a.nickname << endl;
+                cout << BLACK << "Nombre: " << a.nombre << endl;
+                cout << BLACK << "Apellido: " << a.apellido << endl;
+                if(a.puntaje==0){
+                    cout << RED << "Puntaje: " << a.puntaje << endl;
+                }else{
+                    cout << BLUE << "Puntaje: " << a.puntaje << endl;
+                }
+                
             }
         }
     }
@@ -259,7 +257,7 @@ void buscar_jugador(parchivo jugadores, tcad buscado){
     jugadores=fopen("jugadores.txt", "rb");
 
     if(jugadores==NULL){
-        cout<<"archivo inexistente"<<endl;
+        cout << RED << "Archivo Inexistente" << endl;
     }else{
 
         while(!feof(jugadores) && encontrado==false){
@@ -267,18 +265,25 @@ void buscar_jugador(parchivo jugadores, tcad buscado){
             fread(&a,sizeof(a),1,jugadores);
 
             if(strcmp(a.nickname, buscado)==0){
-                cout<<"nickname: "<<a.nickname<<endl;
-                cout<<"nombre: "<<a.nombre<<endl;
+                cout<< BLUE <<"nickname: "<<a.nickname<<endl;
+                cout<< BLACK <<"nombre: "<<a.nombre<<endl;
                 cout<<"apellido: "<<a.apellido<<endl;
                 cout<<"partidas ganadas: "<<a.p_ganadas<<endl;
-                cout<<"puntaje: "<<a.puntaje<<endl;
+                
+                if(a.puntaje==0){
+                    cout << RED << "Puntaje: " << a.puntaje << endl;
+                }else{
+                    cout << BLUE << "Puntaje: " << a.puntaje << endl;
+                    cout << BLACK << endl;
+                }
+                
                 encontrado=true;
             }
 
         }
 
         if(!encontrado){
-            cout<<"No se encontro el jugador"<<endl;
+            cout<< RED <<"No se encontro el jugador"<<endl;
         }
 
     }
@@ -304,7 +309,7 @@ void modificar_jugador(parchivo f, tcad buscado) {
     f = fopen("jugadores.txt", "rb+");
 
     if (f == NULL) {
-        cout << "Archivo inexistente" << endl;
+        cout << RED << "Archivo Inexistente" << endl;
     } else {
         // Buscar al jugador por su nickname
         while (fread(&p, sizeof(p), 1, f) && !encontrado) {
@@ -322,7 +327,8 @@ void modificar_jugador(parchivo f, tcad buscado) {
             fseek(f, -sizeof(p), SEEK_CUR);
             fwrite(&p, sizeof(p), 1, f);
         } else {
-            cout << "REGISTRO NO ENCONTRADO" << endl;
+            cout << RED << "Registro no encontrado" << endl;
+            cout << BLACK << endl;
         }
     }
 
@@ -351,14 +357,16 @@ void eliminar_jugador(parchivo f, tcad buscado){
         fclose(f);
         if (remove("jugadores.txt")==0)
         {
-            cout << "ELIMINADO EXITOSAMENTE" << endl;
+            cout << BLUE << "ELIMINADO EXITOSAMENTE" << endl;
             if (rename("temporal.txt","jugadores.txt")==0)
-                cout << "RENOMBRADO EXITOSAMENTE" << endl;
+                cout << BLACK << "RENOMBRADO EXITOSAMENTE" << endl;
             else
-                cout << "ERROR AL RENOMBRAR" << endl;
+                cout << RED << "ERROR AL RENOMBRAR" << endl;
+                cout << BLACK << endl;
         }
         else
-            cout << "ERROR AL ELIMINAR" << endl;
+            cout << RED << "ERROR AL ELIMINAR" << endl;
+            cout << BLACK << endl;
     }
 
 }
@@ -371,7 +379,8 @@ bool existe_jugador(parchivo jugadores, tcad buscado){
     jugadores=fopen("jugadores.txt", "rb");
 
     if(jugadores==NULL){
-        cout<<"archivo inexistente"<<endl;
+        cout << RED << "Archivo Inexistente" << endl;
+        cout << BLACK << endl;
         return false;
     }
 
@@ -402,7 +411,8 @@ int cantidad_jugadores(parchivo f) {
     f = fopen("jugadores.txt", "rb");
 
     if (f == NULL) {
-        cout << "Error al abrir el archivo." << endl;
+        cout << RED << "Error al abrir el archivo." << endl;
+        cout << BLACK << endl;
         return -1;  // Si falla devuelve -1
     }
 
@@ -415,93 +425,3 @@ int cantidad_jugadores(parchivo f) {
     return cont;
 }
 
-//*********************
-
-/*
-void agregar_jugador_rank(parchivo jugadores){
-
-    tjugador j;
-    bool modificacion=false;
-
-    char rta;
-
-    jugadores=fopen("jugadores.txt", "ab+");
-
-    do{
-
-        carga_reg_rank(j);
-        if (existe_jugador(jugadores, j.nickname)){
-            cout<<"ya existe jugador!"<<endl;
-        }else{
-            fwrite(&j, sizeof(j), 1, jugadores);
-        }
-
-        cout<<"desea ingresar mas jugadores s/n "<<endl;
-        cin>>rta;
-
-    }while(rta!='N' && rta!='n');
-
-    fclose(jugadores);
-
-
-
-}
-
-
-void carga_reg_rank(tjugador &j){
-
-    tcad aux1;
-    int auxpart, auxpunt;
-
-    //strcpy(aux1, j.nickname);
-    //auxpart = j.p_ganadas;
-    //auxpunt = j.puntaje;
-
-
-        cout << "Ingrese Nickname: ";
-        fflush(stdin);
-        gets(j.nickname);
-
-        // Validar que el nickname no esté vacío
-        while (strlen(j.nickname) == 0) {
-            cout << "El nickname no puede estar vacío. Ingréselo nuevamente: ";
-            gets(j.nickname);
-        }
-
-        cout << "Ingrese su nombre: ";
-        gets(j.nombre);
-
-        // Validar que el nombre no esté vacío
-        while (strlen(j.nombre) == 0) {
-            cout << "El nombre no puede estar vacío. Ingréselo nuevamente: ";
-            gets(j.nombre);
-        }
-
-        cout << "Ingrese su apellido: ";
-        gets(j.apellido);
-
-        // Validar que el apellido no esté vacío
-        while (strlen(j.apellido) == 0) {
-            cout << "El apellido no puede estar vacío. Ingréselo nuevamente: ";
-            gets(j.apellido);
-        }
-
-        cout << "Ingrese su el puntaje: ";
-        cin>>j.puntaje;
-
-        // Validar que el apellido no esté vacío
-        while (j.puntaje == 0) {
-            cout << "El puntaje no puede estar vacío. Ingréselo nuevamente: ";
-            cin>>j.puntaje;
-        }
-
-        cout << "Ingrese partidas ganadas: ";
-        cin>>j.p_ganadas;
-
-        // Validar que el apellido no esté vacío
-        while (j.p_ganadas == 0) {
-            cout << "Partidas ganadas no puede estar vacío. Ingréselo nuevamente: ";
-            cin>>j.p_ganadas;
-        }
-
-} */
