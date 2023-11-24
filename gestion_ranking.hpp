@@ -53,7 +53,8 @@ void gestion_ranking2(parchivo j) {
         switch (opc) {
             case 1:
                 
-                    cout << "Ranking de jugadores" << endl;
+                    cout << BLUE << "Ranking de jugadores" << endl;
+                    cout << BLACK << endl;
                     cout << "Ingrese 0 para mostrar en orden decreciente y  1 para creciente: ";
                     cin >> opc2;
                     if(opc2==0){
@@ -128,7 +129,7 @@ void crear_nodo(pranking &nuevo, tjugador valor){
 
 }
 
-//realiza la carga del arbol insertando los valores inferiores a la izquierda
+//ealiza la carga del arbol insertando los valores inferiores a la izquierda
 
 void cargar_arbol(pranking &a, pranking nuevo) {
     if (a == NULL) {

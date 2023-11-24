@@ -32,6 +32,7 @@ typedef struct tbaraja{
     pbaraja sig;
     pbaraja ant;
 };
+
 typedef struct tblista{
     pbaraja inicio;
     pbaraja fin;
@@ -205,7 +206,7 @@ void despedida(){
     cout << endl;
     cout << "Catedra: Estructura de Datos" << endl;
     cout << endl;
-    cout << endl;
+    cout << "2023"<<endl;
     cout << endl;
     //_getch();
 }

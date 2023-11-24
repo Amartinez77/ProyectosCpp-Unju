@@ -8,14 +8,12 @@ typedef FILE *parchivo2;
 /** ESTRUCTURA DE ARRAY DE MAZO AUX */
 typedef tcarta mazo_aux[MAX_CARTAS];
 
-
 /** ESTRUCTURA DE LISTA SIMPLE DEL MAZO */
 typedef struct tnodo *pnodo;
 typedef struct tnodo{
     tcarta datos;
     pnodo sig;
 };
-
 
 /** ESTRUCTURA DE COLA PARA EL MAZO DE CARTAS */
 typedef struct tcola{

@@ -2,10 +2,8 @@
  *  FUNCIONALIDAD DEL JUEGO *
  ****************************/
 
-
-/**
- * ESTRUCTURA DE JUGADORES SELECCIONADOS PARA UNA PARTIDA
- */
+ // ESTRUCTURA DE JUGADORES SELECCIONADOS PARA UNA PARTIDA
+ 
 typedef tjugador tjugcontenedor[MAX_JUG];
 typedef struct tjugselec{
     tjugcontenedor jugadores;
@@ -88,7 +86,8 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
 
 
             case 2: if (jugadores_elegidos==false) {
-                        cout<<"Primero debe elegir al menos 2 jugadores."<<endl;
+                        cout<< RED <<"Primero debe elegir al menos 2 jugadores."<<endl;
+                        cout << BLACK << endl;
                     } else {
                         if (mazo_nuevo==false) {
                             cout<<"Primero debes crear un mazo aleatorio nuevo."<<endl;
@@ -96,7 +95,8 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
                             repartir_cartas(js, cola);
                             nueva_partida=true;
                             cartas_repartidas=true;
-                            cout<<"*** LAS CARTAS FUERON REPARTIDAS ***"<<endl;
+                            cout<< GREEN <<"*** LAS CARTAS FUERON REPARTIDAS ***"<<endl;
+                            cout << BLACK << endl;
                         }
                     }
                     break;
@@ -160,7 +160,8 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
                                     puede_extraer = ver_baraja(js.jugadores[i].baraja, cola);
                                     elegir_carta(js.jugadores[i].baraja, js.jugadores[i].pila, cola, puede_extraer);
                                     if (js.jugadores[i].baraja.contador==0) {
-                                        cout<<"\n*** OH!! TE ACABAS DE QUEDAR SIN CARTAS!! ***\n"<<endl;
+                                        cout<< RED <<"\n*** OH!! TE ACABAS DE QUEDAR SIN CARTAS!! ***\n"<<endl;
+                                        cout << BLACK << endl;
                                     }
                                     cout<<"\n*** PASANDO AL SIGUIENTE TURNO... ***\n"<<endl;
                                     system("pause");
@@ -230,8 +231,9 @@ void gestion_juego(mazo_aux mazo, parchivo jugadores, tcola &cola, bool mazo_nue
 
                         } else {
                             cout << "\nEL GANADOR ES ";
-                            cout<< YELLOW << BG_GREEN << jug_aux.nickname << " CON " << maxpts << "pts." << RESET <<endl;
-                            cout << BLACK << endl;
+                            cout<< BLUE << jug_aux.nickname << " CON " << maxpts << "pts." << endl;
+                            cout<<BLACK<<endl;
+                            
                             for(i=0; i<=cant_jug; i++) {
                                 if ( strcmp(jug_aux.nickname, js.jugadores[i].nickname)==0 ) {
                                     js.jugadores[i].puntaje = js.jugadores[i].puntaje + maxpts;
@@ -614,8 +616,8 @@ void actualizar_jugador(parchivo jugadores, tjugador jug_buscado, int puntosGana
         }
     }
     if (!encontrado) {
-        cout<< RED <<"Error al actualizar: El jugador no existe en el archivo"<<endl;
-        cout << BLACK << endl;
+        cout<<"Error al actualizar: El jugador no existe en el archivo"<<endl;
+        
     } else {
         j.puntaje = j.puntaje + puntosGanados;
         fseek(jugadores, -sizeof(j), SEEK_CUR);
